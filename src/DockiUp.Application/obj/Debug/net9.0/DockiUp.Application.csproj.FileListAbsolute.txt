@@ -1,0 +1,12 @@
+F:\Coding\DockiUpp\src\DockiUp.Application\bin\Debug\net9.0\DockiUp.Application.deps.json
+F:\Coding\DockiUpp\src\DockiUp.Application\bin\Debug\net9.0\DockiUp.Application.dll
+F:\Coding\DockiUpp\src\DockiUp.Application\bin\Debug\net9.0\DockiUp.Application.pdb
+F:\Coding\DockiUpp\src\DockiUp.Application\obj\Debug\net9.0\DockiUp.Application.csproj.AssemblyReference.cache
+F:\Coding\DockiUpp\src\DockiUp.Application\obj\Debug\net9.0\DockiUp.Application.GeneratedMSBuildEditorConfig.editorconfig
+F:\Coding\DockiUpp\src\DockiUp.Application\obj\Debug\net9.0\DockiUp.Application.AssemblyInfoInputs.cache
+F:\Coding\DockiUpp\src\DockiUp.Application\obj\Debug\net9.0\DockiUp.Application.AssemblyInfo.cs
+F:\Coding\DockiUpp\src\DockiUp.Application\obj\Debug\net9.0\DockiUp.Application.csproj.CoreCompileInputs.cache
+F:\Coding\DockiUpp\src\DockiUp.Application\obj\Debug\net9.0\DockiUp.Application.dll
+F:\Coding\DockiUpp\src\DockiUp.Application\obj\Debug\net9.0\refint\DockiUp.Application.dll
+F:\Coding\DockiUpp\src\DockiUp.Application\obj\Debug\net9.0\DockiUp.Application.pdb
+F:\Coding\DockiUpp\src\DockiUp.Application\obj\Debug\net9.0\ref\DockiUp.Application.dll

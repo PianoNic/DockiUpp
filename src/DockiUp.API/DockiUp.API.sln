@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36105.17 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockiUp.API", "DockiUp.API.csproj", "{6A3505ED-F872-4E0D-9B7F-929B82A5E6EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockiUp.Application", "..\DockiUp.Application\DockiUp.Application.csproj", "{352B7107-5542-4467-AC98-D39E8012BD02}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6A3505ED-F872-4E0D-9B7F-929B82A5E6EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A3505ED-F872-4E0D-9B7F-929B82A5E6EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A3505ED-F872-4E0D-9B7F-929B82A5E6EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A3505ED-F872-4E0D-9B7F-929B82A5E6EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{352B7107-5542-4467-AC98-D39E8012BD02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{352B7107-5542-4467-AC98-D39E8012BD02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{352B7107-5542-4467-AC98-D39E8012BD02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{352B7107-5542-4467-AC98-D39E8012BD02}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {465ED7CF-8B1C-4668-A339-36A4C1D6F278}
+	EndGlobalSection
+EndGlobal
