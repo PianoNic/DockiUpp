@@ -1,0 +1,113 @@
+<div class="container-wrapper">
+  <div class="flex-header">
+    <h1 class="dashboard-title">Dashboard</h1>
+  </div>
+
+  <div class="status-cards">
+    <mat-card class="status-card total">
+      <mat-card-header class="centered-flexbox">
+        <mat-icon mat-card-avatar class="centered-logo">devices</mat-icon>
+      </mat-card-header>
+      <mat-card-content class="card-content">
+        <span class="count">{{ containers().length }}</span>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="status-card stopped">
+      <mat-card-header>
+        <mat-icon mat-card-avatar class="centered-logo">stop</mat-icon>
+        <mat-card-title>Stopped</mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="card-content">
+        <span class="count">{{ stoppedCount }}</span>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="status-card updated">
+      <mat-card-header>
+        <mat-icon mat-card-avatar class="centered-logo">check_circle</mat-icon>
+        <mat-card-title>Running</mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="card-content">
+        <span class="count">{{ runningCount }}</span>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="status-card needs-update">
+      <mat-card-header>
+        <mat-icon mat-card-avatar class="centered-logo">new_releases</mat-icon>
+        <mat-card-title class="text-sm">Updates</mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="card-content">
+        <span class="count">{{ needsUpdateCount }}</span>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="status-card updating">
+      <mat-card-header>
+        <mat-icon mat-card-avatar class="centered-logo">loop</mat-icon>
+        <mat-card-title>Updating</mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="card-content">
+        <span class="count">{{ updatingCount }}</span>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="status-card failed">
+      <mat-card-header>
+        <mat-icon mat-card-avatar class="centered-logo">error</mat-icon>
+        <mat-card-title>Failed</mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="card-content">
+        <span class="count">{{ failedCount }}</span>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  @if (!loading()) {
+    <div class="container-list">
+      @for (container of containers().slice(0, 5); track container.dbContainerId) {
+        <mat-card appearance="outlined">
+          <mat-card-header>
+            <mat-icon mat-card-avatar class="centered-logo">
+              {{ getStatusIcon(container.status) }}
+            </mat-icon>
+            <mat-card-title>{{ container.name }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>{{ container.description }}</p>
+            @if (container.lastUpdated) {
+              <p>Last updated: {{ container.lastUpdated | date:'medium' }}</p>
+            }
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-button [routerLink]="['/container', container.dbContainerId]">View</button>
+            <button mat-button [routerLink]="['/edit-container', container.dbContainerId]">Edit</button>
+          </mat-card-actions>
+        </mat-card>
+      }
+
+      @if (containers().length === 0) {
+        <mat-card class="empty-state">
+          <mat-card-content>
+            <p>No containers found. Add your first container to get started.</p>
+            <app-create-project-button />
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="loading-state">
+      <p>Loading containers...</p>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="error-state">
+      <p>Error loading containers: {{ error() }}</p>
+      <button mat-button (click)="loadContainers()">Retry</button>
+    </div>
+  }
+</div>

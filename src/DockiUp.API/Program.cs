@@ -7,7 +7,6 @@ using DockiUp.Infrastructure.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 
 // Register Swagger services
@@ -22,13 +21,24 @@ builder.Services.AddScoped<IDockiUpProjectConfigurationService, DockiUpProjectCo
 
 builder.Services.AddSingleton<IDockiUpDockerClient, DockiUpDockerClient>();
 
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Add CORS policy to allow all origins, methods, and headers
+if (builder.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    builder.Services.AddCors(options =>
+    {
+        options.AddDefaultPolicy(corsBuilder =>
+        {
+            corsBuilder
+                .WithOrigins("http://localhost:4200")
+                .WithExposedHeaders("Content-Disposition")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
+    });
 }
+
+var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -41,9 +51,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
+// Ensure frontend routes work
+app.UseRouting();
 app.UseAuthorization();
-
+app.UseCors();
 app.MapControllers();
 
 app.Run();

@@ -1,0 +1,10 @@
+<mat-toolbar color="primary">
+  <a (click)="navigateTo('/')">DockiUp</a>
+  <div class="toolbar-right-section">
+    <button mat-button (click)="navigateTo('/dashboard')">Dashboard</button>
+    <app-create-project-button />
+    <button mat-icon-button (click)="navigateTo('/settings')">
+      <mat-icon>account_circle</mat-icon>
+    </button>
+  </div>
+</mat-toolbar>
