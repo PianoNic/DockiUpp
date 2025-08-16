@@ -1,31 +1,30 @@
 ﻿using DockiUp.Application.Dtos;
-using DockiUp.Application.Enums;
+using DockiUp.Application.Interfaces;
 using MediatR;
 
 namespace DockiUp.Application.Queries
 {
     public class GetContainerQuery : IRequest<ContainerDto>
     {
-        public Guid ContainerId { get; }
-        public GetContainerQuery(Guid containerId)
+        public string ContainerId { get; }
+        public GetContainerQuery(string containerId)
         {
             ContainerId = containerId;
         }
     }
+
     public class GetContainerQueryHandler : IRequestHandler<GetContainerQuery, ContainerDto>
     {
+        private readonly IDockerService _dockerService;
+
+        public GetContainerQueryHandler(IDockerService dockerService)
+        {
+            _dockerService = dockerService;
+        }
+
         public async Task<ContainerDto> Handle(GetContainerQuery request, CancellationToken cancellationToken)
         {
-            var container = new ContainerDto()
-            {
-                Id = request.ContainerId,
-                Name = "Test Container",
-                ContainerName = "funny-snake",
-                ContainerState = ContainerState.Running,
-                LastUpdated = DateTime.UtcNow,
-                OpenPorts = [1223, 224, 1112]
-            };
-            return await Task.FromResult(container);
+            throw new NotImplementedException();
         }
     }
 }

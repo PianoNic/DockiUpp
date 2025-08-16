@@ -2,7 +2,7 @@
 {
     public enum ContainerUpdateMethod
     {
-        None = 0,
+        unknown = 0,
         Webhook = 1,
         Manual = 2,
         Periodically = 3,

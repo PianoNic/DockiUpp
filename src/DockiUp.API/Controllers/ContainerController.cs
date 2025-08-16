@@ -1,5 +1,4 @@
-﻿using DockiUp.Application.Commands;
-using DockiUp.Application.Dtos;
+﻿using DockiUp.Application.Dtos;
 using DockiUp.Application.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -19,26 +18,10 @@ namespace DockiUp.API.Controllers
 
         [HttpGet("GetContainer", Name = "GetContainer")]
         [ProducesResponseType(typeof(ContainerDto), StatusCodes.Status200OK)]
-        public async Task<ActionResult<ContainerDto>> GetContainer(Guid containerId)
+        public async Task<ActionResult<ContainerDto>> GetContainer(string containerId)
         {
             var container = await _mediator.Send(new GetContainerQuery(containerId));
             return Ok(container);
-        }
-
-        [HttpGet("GetContainers", Name = "GetContainers")]
-        [ProducesResponseType(typeof(ContainerDto), StatusCodes.Status200OK)]
-        public async Task<ActionResult<ContainerDto>> GetContainers()
-        {
-            var container = await _mediator.Send(new GetContainersQuery());
-            return Ok(container);
-        }
-
-        [HttpPost("CreateContainer", Name = "CreateContainer")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<ContainerDto>> CreateContainer([FromBody] SetupContainerDto setupContainerDto)
-        {
-            await _mediator.Send(new CreateContainerCommand(setupContainerDto));
-            return Ok();
         }
     }
 }

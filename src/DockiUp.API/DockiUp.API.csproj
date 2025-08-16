@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DockiUp.Application\DockiUp.Application.csproj" />
+    <ProjectReference Include="..\DockiUp.Infrastructure\DockiUp.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

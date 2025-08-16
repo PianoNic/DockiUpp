@@ -1,6 +1,8 @@
+using DockiUp.Application.Interfaces;
 using DockiUp.Application.Models;
 using DockiUp.Application.Queries;
-using DockiUp.Application.Services;
+using DockiUp.Infrastructure.Clients;
+using DockiUp.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,8 +16,11 @@ builder.Services.AddSwaggerGen();
 // Add Services
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetAppInfoQuery).Assembly));
 builder.Services.Configure<SystemPaths>(builder.Configuration.GetSection("SystemPaths"));
-builder.Services.AddScoped<IDockiUpConfigService, DockiUpConfigService>();
+
 builder.Services.AddScoped<IDockerService, DockerService>();
+builder.Services.AddScoped<IDockiUpProjectConfigurationService, DockiUpProjectConfigurationService>();
+
+builder.Services.AddSingleton<IDockiUpDockerClient, DockiUpDockerClient>();
 
 var app = builder.Build();
 
