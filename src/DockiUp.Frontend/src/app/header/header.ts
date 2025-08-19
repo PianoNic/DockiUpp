@@ -3,7 +3,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
-import { CreateProjectButton } from '../shared/components/create-project-button/create-project-button';
+import { CreateProjectButton } from '../shared/components/create-project-button/button/create-project-button';
 
 @Component({
   selector: 'app-header',

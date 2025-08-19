@@ -15,7 +15,7 @@ namespace DockiUp.Infrastructure.Services
             _dockiUpDockerClient = dockiUpDockerClient;
         }
 
-        public async Task<ComposeProjectDto[]> GetProjectsAsync()
+        public async Task<ProjectDto[]> GetProjectsAsync()
         {
             var containers = await _dockiUpDockerClient.DockerClient.Containers
                 .ListContainersAsync(new ContainersListParameters { All = true });
@@ -43,7 +43,7 @@ namespace DockiUp.Infrastructure.Services
                 .Where(dto => dto != null)
                 .GroupBy(containerDto => containerDto.ProjectName)
                 .Select(group =>
-                    new ComposeProjectDto
+                    new ProjectDto
                     {
                         Name = group.Key,
                         Containers = group.ToArray()

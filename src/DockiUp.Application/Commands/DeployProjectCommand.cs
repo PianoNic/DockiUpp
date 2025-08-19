@@ -1,7 +1,7 @@
 ﻿using DockiUp.Application.Dtos;
-using DockiUp.Application.Enums;
 using DockiUp.Application.Interfaces;
 using DockiUp.Application.Models;
+using DockiUp.Domain.Enums;
 using MediatR;
 using Microsoft.Extensions.Options;
 
@@ -35,7 +35,7 @@ namespace DockiUp.Application.Commands
             string containerFolderPath = Path.Combine(_systemPaths.ProjectsPath, request.SetupContainerDto.ProjectName);
             Directory.CreateDirectory(containerFolderPath);
 
-            if (request.SetupContainerDto.ContainerOrigin == ContainerOriginType.Compose && request.SetupContainerDto.Compose != null)
+            if (request.SetupContainerDto.ProjectOrigin == ProjectOriginType.Compose && request.SetupContainerDto.Compose != null)
             {
                 await _projectConfigurationService.GenerateDockiUpConfigFileAsync(containerFolderPath, request.SetupContainerDto);
                 await _projectConfigurationService.WriteComposeFileAsync(containerFolderPath, request.SetupContainerDto.Compose);

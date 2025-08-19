@@ -27,9 +27,9 @@ namespace DockiUp.API.Controllers
         }
 
         [HttpGet("GetProjects", Name = "GetProjects")]
-        [ProducesResponseType(typeof(ComposeProjectDto[]), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProjectDto[]), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<ComposeProjectDto[]>> GetContainers()
+        public async Task<ActionResult<ProjectDto[]>> GetContainers()
         {
             var container = await _mediator.Send(new GetProjectsQuery());
             return Ok(container);

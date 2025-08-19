@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockiUp.Application", "..\D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockiUp.Infrastructure", "..\DockiUp.Infrastructure\DockiUp.Infrastructure.csproj", "{865E3638-E68C-48C7-9E4C-4D3C7A2E73D6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockiUp.Domain", "..\DockiUp.Domain\DockiUp.Domain.csproj", "{BC91AFE7-BEFE-48CF-A9B9-0A3815E86F72}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{865E3638-E68C-48C7-9E4C-4D3C7A2E73D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{865E3638-E68C-48C7-9E4C-4D3C7A2E73D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{865E3638-E68C-48C7-9E4C-4D3C7A2E73D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC91AFE7-BEFE-48CF-A9B9-0A3815E86F72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC91AFE7-BEFE-48CF-A9B9-0A3815E86F72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC91AFE7-BEFE-48CF-A9B9-0A3815E86F72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC91AFE7-BEFE-48CF-A9B9-0A3815E86F72}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

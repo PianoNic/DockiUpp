@@ -9,20 +9,20 @@
  */
 
 
-export type UpdateMethodType = 0 | 1 | 2 | 3 | 4 | 5;
+export type UpdateMethodType = 'Unknown' | 'Created' | 'Stopped' | 'Running' | 'Updating' | 'Crashed';
 
 export const UpdateMethodType = {
 
-    NUMBER_0: 0 as UpdateMethodType,
+    Unknown: 'Unknown' as UpdateMethodType,
 
-    NUMBER_1: 1 as UpdateMethodType,
+    Created: 'Created' as UpdateMethodType,
 
-    NUMBER_2: 2 as UpdateMethodType,
+    Stopped: 'Stopped' as UpdateMethodType,
 
-    NUMBER_3: 3 as UpdateMethodType,
+    Running: 'Running' as UpdateMethodType,
 
-    NUMBER_4: 4 as UpdateMethodType,
+    Updating: 'Updating' as UpdateMethodType,
 
-    NUMBER_5: 5 as UpdateMethodType
+    Crashed: 'Crashed' as UpdateMethodType
 };
 

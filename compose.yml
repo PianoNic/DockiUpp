@@ -1,0 +1,44 @@
+services:
+  dockiup:
+    image: dockiup:0.0.1
+    container_name: dockiup
+    build:
+      context: .
+      dockerfile: src/DockiUp.API/Dockerfile
+    env_file:
+      - .env
+    environment:
+      - ConnectionStrings__DockiUpDatabase=Host=dockiup-db;Port=5432;Database=dockiupdb;User=postgres;Password=${POSTGRES_PASSWORD}
+      - SystemPaths__DockerSocket=${DOCKER_SOCKET_PATH}
+      - SystemPaths__ProjectsPath=${PROJECTS_PATH}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ${PROJECTS_PATH}:${PROJECTS_PATH}
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      dockiup-db:
+        condition: service_healthy # Ensures DB is ready before starting the app
+
+  dockiup-db:
+    image: postgres:15
+    container_name: dockiup-postgres
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: dockiupdb
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      retries: 5
+      start_period: 20s
+      timeout: 5s
+    ports:
+      - "5432:5432"
+volumes:
+  postgres-data:

@@ -1,6 +1,6 @@
 ﻿namespace DockiUp.Application.Dtos
 {
-    public class ComposeProjectDto
+    public class ProjectDto
     {
         public required string Name { get; set; }
         public required ContainerDto[] Containers { get; set; }

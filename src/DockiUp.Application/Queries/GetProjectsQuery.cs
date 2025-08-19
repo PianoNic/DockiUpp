@@ -4,13 +4,13 @@ using MediatR;
 
 namespace DockiUp.Application.Queries
 {
-    public class GetProjectsQuery : IRequest<ComposeProjectDto[]>
+    public class GetProjectsQuery : IRequest<ProjectDto[]>
     {
         public GetProjectsQuery()
         {
         }
     }
-    public class GetProjectsQueryHandler : IRequestHandler<GetProjectsQuery, ComposeProjectDto[]>
+    public class GetProjectsQueryHandler : IRequestHandler<GetProjectsQuery, ProjectDto[]>
     {
         private readonly IDockerService _dockerService;
 
@@ -19,7 +19,7 @@ namespace DockiUp.Application.Queries
             _dockerService = dockerService;
         }
 
-        public async Task<ComposeProjectDto[]> Handle(GetProjectsQuery request, CancellationToken cancellationToken)
+        public async Task<ProjectDto[]> Handle(GetProjectsQuery request, CancellationToken cancellationToken)
         {
             return await _dockerService.GetProjectsAsync();
         }

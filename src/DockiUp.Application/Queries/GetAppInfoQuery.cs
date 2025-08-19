@@ -18,7 +18,7 @@ namespace DockiUp.Application.Queries
 
         public async Task<AppInfoDto> Handle(GetAppInfoQuery request, CancellationToken cancellationToken)
         {
-            return await Task.FromResult(new AppInfoDto() { Environment = "asd", Version = "v0.0.0" });
+            return await Task.FromResult(new AppInfoDto() { Environment = "Dev", Version = "v1.0.0" });
         }
     }
 }

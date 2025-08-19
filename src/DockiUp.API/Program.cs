@@ -1,13 +1,20 @@
 using DockiUp.Application.Interfaces;
 using DockiUp.Application.Models;
 using DockiUp.Application.Queries;
+using DockiUp.Infrastructure;
 using DockiUp.Infrastructure.Clients;
 using DockiUp.Infrastructure.Services;
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 // Register Swagger services
 builder.Services.AddSwaggerGen();
@@ -20,6 +27,16 @@ builder.Services.AddScoped<IDockerService, DockerService>();
 builder.Services.AddScoped<IDockiUpProjectConfigurationService, DockiUpProjectConfigurationService>();
 
 builder.Services.AddSingleton<IDockiUpDockerClient, DockiUpDockerClient>();
+
+// Configure the DbContext with a connection string.
+builder.Services.AddDbContext<DockiUpDbContext>(options =>
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("DockiUpDatabase"),
+        npgsqlOptions => npgsqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(10),
+            errorCodesToAdd: null)
+    ));
 
 // Add CORS policy to allow all origins, methods, and headers
 if (builder.Environment.IsDevelopment())
@@ -39,6 +56,12 @@ if (builder.Environment.IsDevelopment())
 }
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<DockiUpDbContext>();
+    dbContext.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

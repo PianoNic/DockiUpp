@@ -35,6 +35,7 @@
     "@angular/router": "^20.1.0",
     "@fortawesome/angular-fontawesome": "^3.0.0",
     "@fortawesome/free-brands-svg-icons": "^7.0.0",
+    "@ngrx/signals": "^20.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },

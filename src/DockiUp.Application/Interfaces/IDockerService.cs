@@ -4,7 +4,7 @@ namespace DockiUp.Application.Interfaces
 {
     public interface IDockerService
     {
-        Task<ComposeProjectDto[]> GetProjectsAsync();
+        Task<ProjectDto[]> GetProjectsAsync();
         Task StartProjectAsync(string folderPath);
         Task StopProjectAsync(string folderPath);
         Task RestartProjectAsync(string folderPath);

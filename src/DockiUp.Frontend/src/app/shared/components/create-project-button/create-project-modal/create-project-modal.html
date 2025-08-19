@@ -1,0 +1,186 @@
+<h2 mat-dialog-title>
+  <span>Create Container</span>
+  <div class="sizer"></div>
+</h2>
+
+<mat-dialog-content>
+  @if(isloading()){
+  <mat-progress-bar mode="indeterminate" class="progress-bar" />
+  }
+
+  <mat-stepper [linear]="true" class="stepper-module" #stepper>
+    <!-- Step 1: Project Information -->
+    <mat-step [stepControl]="projectInformationFormGroup">
+      <ng-template matStepLabel>Project Information</ng-template>
+
+      <form [formGroup]="projectInformationFormGroup" class="form-content">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Project Name</mat-label>
+          <input matInput placeholder="Project Name" formControlName="projectName" required maxlength="20">
+          @if (projectInformationFormGroup.get('projectName')?.hasError('required')) {
+          <mat-error>Project name is required</mat-error>
+          }
+          @if (projectInformationFormGroup.get('projectName')?.hasError('maxlength')) {
+          <mat-error>Project name must be 20 characters or less</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput placeholder="Describe your project" rows="5" formControlName="description"></textarea>
+        </mat-form-field>
+      </form>
+    </mat-step>
+
+    <!-- Step 2: Deployment Method -->
+    <mat-step [stepControl]="projectOriginFormGroup">
+      <ng-template matStepLabel>Deployment Method</ng-template>
+
+      <form [formGroup]="projectOriginFormGroup" class="form-content">
+        <mat-radio-group formControlName="originType" class="update-method-group">
+          <mat-radio-button [value]="ContainerOriginType.Compose" class="update-method-option">
+            <div class="radio-content">
+              <h3>Compose File (Recommended)</h3>
+              <p>Define your application using a compose file</p>
+            </div>
+          </mat-radio-button>
+
+          <mat-radio-button [value]="ContainerOriginType.Git" class="update-method-option">
+            <div class="radio-content">
+              <h3>Git URL</h3>
+              <p>Clone your project directly from a Git URL</p>
+            </div>
+          </mat-radio-button>
+
+          <mat-radio-button [value]="ContainerOriginType.Local" class="update-method-option">
+            <div class="radio-content">
+              <h3>Import Existing Project</h3>
+              <p>Use a project already located on your server</p>
+            </div>
+          </mat-radio-button>
+        </mat-radio-group>
+
+        <!-- Git URL Input -->
+        @if (projectOriginFormGroup.get('originType')?.value === ContainerOriginType.Git) {
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Git URL</mat-label>
+          <input matInput placeholder="Enter Git repository URL" formControlName="gitUrl" required type="url">
+          @if (projectOriginFormGroup.get('gitUrl')?.hasError('required')) {
+          <mat-error>Git URL is required</mat-error>
+          }
+        </mat-form-field>
+        }
+
+        <!-- Compose Content Input -->
+        @else if (projectOriginFormGroup.get('originType')?.value === ContainerOriginType.Compose) {
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Compose File</mat-label>
+          <textarea matInput placeholder="Paste compose file content here" rows="15" formControlName="composeContent"
+            required></textarea>
+          @if (projectOriginFormGroup.get('composeContent')?.hasError('required')) {
+          <mat-error>Compose file content is required</mat-error>
+          }
+        </mat-form-field>
+        }
+
+        <!-- Local Path Input -->
+        @else if (projectOriginFormGroup.get('originType')?.value === ContainerOriginType.Local) {
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Project Path</mat-label>
+          <input matInput type="text" placeholder="Select or enter a path" formControlName="path"
+            [matAutocomplete]="pathAuto" required>
+          <mat-autocomplete autoActiveFirstOption #pathAuto="matAutocomplete">
+            @for (path of filteredPaths(); track path) {
+            <mat-option [value]="path">{{path}}</mat-option>
+            }
+          </mat-autocomplete>
+          @if (projectOriginFormGroup.get('path')?.hasError('required')) {
+          <mat-error>Project path is required</mat-error>
+          }
+        </mat-form-field>
+        }
+      </form>
+    </mat-step>
+
+    <!-- Step 3: Update Method (now shown for all deployment methods) -->
+    <mat-step [stepControl]="updateMethodFormGroup">
+      <ng-template matStepLabel>Update Method</ng-template>
+      <form [formGroup]="updateMethodFormGroup" class="form-content">
+        <mat-radio-group formControlName="updateMethod" class="update-method-group">
+          <mat-radio-button [value]="ContainerUpdateMethod.Webhook" class="update-method-option">
+            <div class="radio-content">
+              <h3>Use Webhook (Recommended)</h3>
+              <p>Create a webhook in your Git repository to notify the system about new changes immediately.</p>
+              <p class="note">This option requires admin access to the repository.</p>
+            </div>
+          </mat-radio-button>
+
+          <mat-radio-button [value]="ContainerUpdateMethod.Manual" class="update-method-option">
+            <div class="radio-content">
+              <h3>Update Manually</h3>
+              <p>You will be prompted to update the container when you press a button.</p>
+            </div>
+          </mat-radio-button>
+
+          <mat-radio-button [value]="ContainerUpdateMethod.Periodically" class="update-method-option">
+            <div class="radio-content">
+              <h3>Check Periodically</h3>
+              <p>The system will check for changes in the repository at regular intervals.</p>
+            </div>
+          </mat-radio-button>
+        </mat-radio-group>
+
+        <!-- Webhook URL input -->
+        @if (updateMethodFormGroup.get('updateMethod')?.value === ContainerUpdateMethod.Webhook) {
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Webhook URL</mat-label>
+          <input matInput placeholder="Enter webhook URL" formControlName="webhookUrl" required type="url">
+          @if (updateMethodFormGroup.get('webhookUrl')?.hasError('required')) {
+          <mat-error>Webhook URL is required</mat-error>
+          }
+          @if (updateMethodFormGroup.get('webhookUrl')?.hasError('pattern')) {
+          <mat-error>Please enter a valid URL</mat-error>
+          }
+        </mat-form-field>
+        }
+
+        <!-- Periodic interval input -->
+        @else if (updateMethodFormGroup.get('updateMethod')?.value === ContainerUpdateMethod.Periodically) {
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Check Interval (minutes)</mat-label>
+          <input matInput placeholder="Interval in minutes" formControlName="periodicInterval" required type="number"
+            min="1">
+          @if (updateMethodFormGroup.get('periodicInterval')?.hasError('required')) {
+          <mat-error>Check interval is required</mat-error>
+          }
+          @if (updateMethodFormGroup.get('periodicInterval')?.hasError('min')) {
+          <mat-error>Interval must be at least 1 minute</mat-error>
+          }
+        </mat-form-field>
+        }
+      </form>
+    </mat-step>
+  </mat-stepper>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-button style="margin-right:auto;" (click)="cancel()">Cancel</button>
+
+  <button mat-button (click)="stepper.previous()" [disabled]="stepper.selectedIndex === 0">
+    Back
+  </button>
+
+  @if (stepper.selectedIndex === stepper.steps.length - 1) {
+  <button mat-button color="primary" (click)="finish()"
+    [disabled]="!isStep1Valid() || !isStep2Valid() || !isStep3Valid()">
+    Finish
+  </button>
+  } @else {
+  <button mat-button (click)="stepper.next()" [disabled]="
+      (stepper.selectedIndex === 0 && !isStep1Valid()) ||
+      (stepper.selectedIndex === 1 && !isStep2Valid())
+    ">
+    Next
+  </button>
+  }
+</mat-dialog-actions>

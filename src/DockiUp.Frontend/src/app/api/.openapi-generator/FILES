@@ -11,12 +11,12 @@ encoder.ts
 git_push.sh
 index.ts
 model/appInfoDto.ts
-model/composeProjectDto.ts
 model/containerDto.ts
 model/containerOriginType.ts
 model/containerUpdateMethod.ts
 model/models.ts
 model/problemDetails.ts
+model/projectDto.ts
 model/setupProjectDto.ts
 model/updateMethodType.ts
 param.ts

@@ -9,16 +9,16 @@
  */
 
 
-export type ContainerUpdateMethod = 0 | 1 | 2 | 3;
+export type ContainerUpdateMethod = 'unknown' | 'Webhook' | 'Manual' | 'Periodically';
 
 export const ContainerUpdateMethod = {
 
-    NUMBER_0: 0 as ContainerUpdateMethod,
+    Unknown: 'unknown' as ContainerUpdateMethod,
 
-    NUMBER_1: 1 as ContainerUpdateMethod,
+    Webhook: 'Webhook' as ContainerUpdateMethod,
 
-    NUMBER_2: 2 as ContainerUpdateMethod,
+    Manual: 'Manual' as ContainerUpdateMethod,
 
-    NUMBER_3: 3 as ContainerUpdateMethod
+    Periodically: 'Periodically' as ContainerUpdateMethod
 };
 

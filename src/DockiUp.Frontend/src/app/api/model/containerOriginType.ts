@@ -9,16 +9,16 @@
  */
 
 
-export type ContainerOriginType = 0 | 1 | 2 | 3;
+export type ContainerOriginType = 'Unknown' | 'Git' | 'Compose' | 'Local';
 
 export const ContainerOriginType = {
 
-    NUMBER_0: 0 as ContainerOriginType,
+    Unknown: 'Unknown' as ContainerOriginType,
 
-    NUMBER_1: 1 as ContainerOriginType,
+    Git: 'Git' as ContainerOriginType,
 
-    NUMBER_2: 2 as ContainerOriginType,
+    Compose: 'Compose' as ContainerOriginType,
 
-    NUMBER_3: 3 as ContainerOriginType
+    Local: 'Local' as ContainerOriginType
 };
 
