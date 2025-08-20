@@ -152,6 +152,7 @@ export class CreateProjectModal implements OnInit {
 
       case ProjectOriginType.Git:
         originControls['gitUrl'].setValidators([Validators.required]);
+        originControls['composeContent'].setValidators([Validators.required]);
         break;
     }
 
@@ -222,7 +223,9 @@ export class CreateProjectModal implements OnInit {
         step2Valid = !!this.projectOriginFormGroup.get('composeContent')?.valid;
         break;
       case ProjectOriginType.Git:
-        step2Valid = !!this.projectOriginFormGroup.get('gitUrl')?.valid;
+        step2Valid =
+          !!this.projectOriginFormGroup.get('gitUrl')?.valid &&
+          !!this.projectOriginFormGroup.get('composeContent')?.valid;
         break;
       default:
         step2Valid = false;
@@ -271,13 +274,16 @@ export class CreateProjectModal implements OnInit {
       description: info.description ?? null,
       projectOrigin: origin.originType,
       gitUrl: origin.originType === ProjectOriginType.Git ? origin.gitUrl ?? null : null,
-      compose: origin.originType === ProjectOriginType.Compose ? origin.composeContent ?? null : null,
+      // Set compose for both Git and Compose origin types
+      compose: (origin.originType === ProjectOriginType.Compose || origin.originType === ProjectOriginType.Git)
+        ? origin.composeContent ?? null
+        : null,
       path: origin.originType === ProjectOriginType.Import ? origin.path ?? null : null,
       projectUpdateMethod: update.updateMethod,
       webhookUrl: update.updateMethod === ProjectUpdateMethod.Webhook ? update.webhookUrl ?? null : null,
       periodicIntervalInMinutes: update.updateMethod === ProjectUpdateMethod.Periodically
-      ? (update.periodicInterval ? Number(update.periodicInterval) : null)
-      : null
+        ? (update.periodicInterval ? Number(update.periodicInterval) : null)
+        : null
     };
 
     this.dialogRef.close(result);

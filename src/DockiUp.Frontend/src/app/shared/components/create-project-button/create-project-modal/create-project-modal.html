@@ -69,6 +69,13 @@
           <mat-error>Git URL is required</mat-error>
           }
         </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Compose File</mat-label>
+          <textarea matInput placeholder="Paste compose file content here" rows="12" formControlName="composeContent" required></textarea>
+          @if (projectOriginFormGroup.get('composeContent')?.hasError('required')) {
+          <mat-error>Compose file content is required</mat-error>
+          }
+        </mat-form-field>
         }
 
         <!-- Compose Content Input -->

@@ -13,10 +13,9 @@ namespace DockiUp.Infrastructure.Services
             _dbContext = dbContext;
         }
 
-        public Task CloneRepositoryAsync(string projectPath, string gitUrl)
+        public async Task CloneRepositoryAsync(string projectPath, string gitUrl)
         {
-            Repository.Clone(gitUrl, projectPath);
-            return Task.CompletedTask;
+            await Task.Run(() => Repository.Clone(gitUrl, projectPath));
         }
 
         public async Task UpdateRepositoy(int projectId)
