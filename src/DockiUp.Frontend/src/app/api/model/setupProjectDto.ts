@@ -7,17 +7,20 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ContainerOriginType } from './containerOriginType';
-import { ContainerUpdateMethod } from './containerUpdateMethod';
+import { ProjectOriginType } from './projectOriginType';
+import { ProjectUpdateMethod } from './projectUpdateMethod';
 
 
 export interface SetupProjectDto { 
     projectName: string | null;
-    containerOrigin: ContainerOriginType;
-    updateMethod: ContainerUpdateMethod;
-    compose?: string | null;
+    description?: string | null;
+    projectOrigin: ProjectOriginType;
     gitUrl?: string | null;
+    compose?: string | null;
     path?: string | null;
+    projectUpdateMethod: ProjectUpdateMethod;
+    webhookUrl?: string | null;
+    periodicIntervalInMinutes?: number | null;
 }
 export namespace SetupProjectDto {
 }

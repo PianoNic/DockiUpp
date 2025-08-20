@@ -2,6 +2,8 @@
 {
     public interface IDockiUpProjectConfigurationService
     {
-        Task WriteComposeFileAsync(string projectPath, string composeContent);
+        Task<string> WriteComposeFileAsync(string projectPath, string composeContent);
+        Task CloneRepositoryAsync(string projectPath, string gitUrl);
+        Task UpdateRepositoy(int projectId);
     }
 }

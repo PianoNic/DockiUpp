@@ -7,25 +7,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRadioModule } from '@angular/material/radio';
-import { ContainerOriginType, ContainerUpdateMethod } from '../../../../api';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { ProjectOriginType, ProjectUpdateMethod, SetupProjectDto, UpdateMethodType } from '../../../../api';
 
-export interface CreateContainerRequest {
-  // Project Information (Step 1)
-  projectName: string;
-  description?: string;
-
-  // Project Origin (Step 2)
-  originType: ContainerOriginType;
-  gitUrl?: string;
-  composeContent?: string;
-  path?: string;
-
-  // Update Method (Step 3)
-  updateMethod: ContainerUpdateMethod;
-  webhookUrl?: string;
-  periodicInterval?: number;
-}
 
 @Component({
   selector: 'app-create-project-modal',
@@ -51,8 +35,8 @@ export class CreateProjectModal implements OnInit {
   private dialogRef = inject(MatDialogRef<CreateProjectModal>);
 
   // Enums for template
-  readonly ContainerOriginType = ContainerOriginType;
-  readonly ContainerUpdateMethod = ContainerUpdateMethod;
+  readonly ProjectOriginType = ProjectOriginType;
+  readonly ProjectUpdateMethod = ProjectUpdateMethod;
 
   // Autocomplete data
   readonly paths: string[] = [
@@ -88,14 +72,14 @@ export class CreateProjectModal implements OnInit {
     });
 
     this.projectOriginFormGroup = this.fb.group({
-      originType: [ContainerOriginType.Compose, Validators.required],
+      originType: [ProjectOriginType.Compose, Validators.required],
       gitUrl: [''],
       composeContent: ['', Validators.required],
       path: ['']
     });
 
     this.updateMethodFormGroup = this.fb.group({
-      updateMethod: [ContainerUpdateMethod.Webhook, Validators.required],
+      updateMethod: [ProjectUpdateMethod.Webhook, Validators.required],
       webhookUrl: [''],
       periodicInterval: ['']
     });
@@ -109,9 +93,9 @@ export class CreateProjectModal implements OnInit {
     });
 
     // Initial validation setup
-    this.updateValidationForOriginType(ContainerOriginType.Compose);
+    this.updateValidationForOriginType(ProjectOriginType.Compose);
     // Initialize validation for preselected webhook
-    this.updateValidationForUpdateMethod(ContainerUpdateMethod.Webhook);
+    this.updateValidationForUpdateMethod(ProjectUpdateMethod.Webhook);
     this.updateValidationStates();
 
     // Listen for form validation changes
@@ -138,7 +122,7 @@ export class CreateProjectModal implements OnInit {
     });
   }
 
-  private updateValidationForOriginType(originType: ContainerOriginType) {
+  private updateValidationForOriginType(originType: ProjectOriginType) {
     const originControls = this.projectOriginFormGroup.controls;
 
     // Clear all validators first
@@ -152,21 +136,21 @@ export class CreateProjectModal implements OnInit {
     originControls['path'].setValue('', { emitEvent: false });
 
     // Reset update method form when origin type changes, but keep webhook preselected
-    this.updateMethodFormGroup.get('updateMethod')?.setValue(ContainerUpdateMethod.Webhook, { emitEvent: false });
+    this.updateMethodFormGroup.get('updateMethod')?.setValue(ProjectUpdateMethod.Webhook, { emitEvent: false });
     this.updateMethodFormGroup.get('webhookUrl')?.setValue('', { emitEvent: false });
     this.updateMethodFormGroup.get('periodicInterval')?.setValue('', { emitEvent: false });
 
     // Apply validators based on origin type
     switch (originType) {
-      case ContainerOriginType.Local:
+      case ProjectOriginType.Import:
         originControls['path'].setValidators([Validators.required]);
         break;
 
-      case ContainerOriginType.Compose:
+      case ProjectOriginType.Compose:
         originControls['composeContent'].setValidators([Validators.required]);
         break;
 
-      case ContainerOriginType.Git:
+      case ProjectOriginType.Git:
         originControls['gitUrl'].setValidators([Validators.required]);
         break;
     }
@@ -181,13 +165,13 @@ export class CreateProjectModal implements OnInit {
     this.updateMethodFormGroup.get('updateMethod')?.updateValueAndValidity();
 
     // Initialize validation for the preselected webhook
-    this.updateValidationForUpdateMethod(ContainerUpdateMethod.Webhook);
+    this.updateValidationForUpdateMethod(ProjectUpdateMethod.Webhook);
 
     // Update validation states
     setTimeout(() => this.updateValidationStates(), 0);
   }
 
-  private updateValidationForUpdateMethod(updateMethod: ContainerUpdateMethod) {
+  private updateValidationForUpdateMethod(updateMethod: ProjectUpdateMethod) {
     const webhookControl = this.updateMethodFormGroup.get('webhookUrl');
     const intervalControl = this.updateMethodFormGroup.get('periodicInterval');
 
@@ -201,15 +185,15 @@ export class CreateProjectModal implements OnInit {
 
     // Apply validators based on update method
     switch (updateMethod) {
-      case ContainerUpdateMethod.Webhook:
+      case ProjectUpdateMethod.Webhook:
         webhookControl?.setValidators([Validators.required, Validators.pattern('https?://.+')]);
         break;
 
-      case ContainerUpdateMethod.Periodically:
+      case ProjectUpdateMethod.Periodically:
         intervalControl?.setValidators([Validators.required, Validators.min(1)]);
         break;
 
-      case ContainerUpdateMethod.Manual:
+      case ProjectUpdateMethod.Manual:
         // No additional validation needed
         break;
     }
@@ -231,13 +215,13 @@ export class CreateProjectModal implements OnInit {
     let step2Valid = false;
 
     switch (originType) {
-      case ContainerOriginType.Local:
+      case ProjectOriginType.Import:
         step2Valid = !!this.projectOriginFormGroup.get('path')?.valid;
         break;
-      case ContainerOriginType.Compose:
+      case ProjectOriginType.Compose:
         step2Valid = !!this.projectOriginFormGroup.get('composeContent')?.valid;
         break;
-      case ContainerOriginType.Git:
+      case ProjectOriginType.Git:
         step2Valid = !!this.projectOriginFormGroup.get('gitUrl')?.valid;
         break;
       default:
@@ -253,13 +237,13 @@ export class CreateProjectModal implements OnInit {
       step3Valid = false;
     } else {
       switch (updateMethod) {
-        case ContainerUpdateMethod.Webhook:
+        case ProjectUpdateMethod.Webhook:
           step3Valid = !!this.updateMethodFormGroup.get('webhookUrl')?.valid;
           break;
-        case ContainerUpdateMethod.Periodically:
+        case ProjectUpdateMethod.Periodically:
           step3Valid = !!this.updateMethodFormGroup.get('periodicInterval')?.valid;
           break;
-        case ContainerUpdateMethod.Manual:
+        case ProjectUpdateMethod.Manual:
           step3Valid = true;
           break;
         default:
@@ -278,10 +262,22 @@ export class CreateProjectModal implements OnInit {
       return;
     }
 
-    const result: CreateContainerRequest = {
-      ...this.projectInformationFormGroup.value,
-      ...this.projectOriginFormGroup.value,
-      ...this.updateMethodFormGroup.value
+    const info = this.projectInformationFormGroup.value;
+    const origin = this.projectOriginFormGroup.value;
+    const update = this.updateMethodFormGroup.value;
+
+    const result: SetupProjectDto = {
+      projectName: info.projectName ?? null,
+      description: info.description ?? null,
+      projectOrigin: origin.originType,
+      gitUrl: origin.originType === ProjectOriginType.Git ? origin.gitUrl ?? null : null,
+      compose: origin.originType === ProjectOriginType.Compose ? origin.composeContent ?? null : null,
+      path: origin.originType === ProjectOriginType.Import ? origin.path ?? null : null,
+      projectUpdateMethod: update.updateMethod,
+      webhookUrl: update.updateMethod === ProjectUpdateMethod.Webhook ? update.webhookUrl ?? null : null,
+      periodicIntervalInMinutes: update.updateMethod === ProjectUpdateMethod.Periodically
+      ? (update.periodicInterval ? Number(update.periodicInterval) : null)
+      : null
     };
 
     this.dialogRef.close(result);

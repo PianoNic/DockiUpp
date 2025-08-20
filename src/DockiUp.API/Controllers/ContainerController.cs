@@ -20,7 +20,7 @@ namespace DockiUp.API.Controllers
         [ProducesResponseType(typeof(ContainerDto), StatusCodes.Status200OK)]
         public async Task<ActionResult<ContainerDto>> GetContainer(string containerId)
         {
-            var container = await _mediator.Send(new GetContainerQuery(containerId));
+            var container = await _mediator.Send(new GetContainerQuery(containerId), HttpContext.RequestAborted);
             return Ok(container);
         }
     }

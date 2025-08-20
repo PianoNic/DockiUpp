@@ -30,24 +30,17 @@ namespace DockiUp.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Compose")
-                        .HasColumnType("text");
-
                     b.Property<string>("ComposePath")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
                     b.Property<string>("GitUrl")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("LastUpdated")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Path")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int?>("PeriodicIntervalInMinutes")
@@ -60,8 +53,15 @@ namespace DockiUp.Infrastructure.Migrations
                     b.Property<int>("ProjectOrigin")
                         .HasColumnType("integer");
 
+                    b.Property<string>("ProjectPath")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("ProjectUpdateMethod")
                         .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("WebhookUrl")
                         .HasColumnType("text");

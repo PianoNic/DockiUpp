@@ -9,7 +9,7 @@ namespace DockiUp.Infrastructure.Services
     public class DockerService : IDockerService
     {
         private readonly IDockiUpDockerClient _dockiUpDockerClient;
-
+        private const string ComposeFileName = "dockiup_compose.yml";
         public DockerService(IDockiUpDockerClient dockiUpDockerClient)
         {
             _dockiUpDockerClient = dockiUpDockerClient;
@@ -59,7 +59,7 @@ namespace DockiUp.Infrastructure.Services
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "docker",
-                    Arguments = $"compose up -d",
+                    Arguments = $"compose -f {ComposeFileName} up -d",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,

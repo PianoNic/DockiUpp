@@ -1,9 +1,11 @@
 using DockiUp.Application.Interfaces;
 using DockiUp.Application.Models;
 using DockiUp.Application.Queries;
+using DockiUp.Application.Validators;
 using DockiUp.Infrastructure;
 using DockiUp.Infrastructure.Clients;
 using DockiUp.Infrastructure.Services;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -28,6 +30,9 @@ builder.Services.AddScoped<IDockiUpProjectConfigurationService, DockiUpProjectCo
 
 builder.Services.AddSingleton<IDockiUpDockerClient, DockiUpDockerClient>();
 
+// Add Validators
+builder.Services.AddValidatorsFromAssemblyContaining<DeployProjectCommandValidator>();
+
 // Configure the DbContext with a connection string.
 builder.Services.AddDbContext<DockiUpDbContext>(options =>
     options.UseNpgsql(
@@ -37,6 +42,10 @@ builder.Services.AddDbContext<DockiUpDbContext>(options =>
             maxRetryDelay: TimeSpan.FromSeconds(10),
             errorCodesToAdd: null)
     ));
+
+builder.Services.AddScoped<IDockiUpDbContext>(provider =>
+        provider.GetRequiredService<DockiUpDbContext>()
+    );
 
 // Add CORS policy to allow all origins, methods, and headers
 if (builder.Environment.IsDevelopment())

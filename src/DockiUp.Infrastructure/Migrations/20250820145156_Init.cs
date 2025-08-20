@@ -22,13 +22,13 @@ namespace DockiUp.Infrastructure.Migrations
                     Description = table.Column<string>(type: "text", nullable: true),
                     ProjectOrigin = table.Column<int>(type: "integer", nullable: false),
                     GitUrl = table.Column<string>(type: "text", nullable: true),
-                    Compose = table.Column<string>(type: "text", nullable: true),
-                    Path = table.Column<string>(type: "text", nullable: false),
+                    ProjectPath = table.Column<string>(type: "text", nullable: false),
                     ComposePath = table.Column<string>(type: "text", nullable: false),
                     ProjectUpdateMethod = table.Column<int>(type: "integer", nullable: false),
                     WebhookUrl = table.Column<string>(type: "text", nullable: true),
                     PeriodicIntervalInMinutes = table.Column<int>(type: "integer", nullable: true),
-                    LastUpdated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {

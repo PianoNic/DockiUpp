@@ -19,9 +19,9 @@ namespace DockiUp.Application.Mappers
                     return UpdateMethodType.Running;
 
                 case "paused":
+                case "exited":
                     return UpdateMethodType.Stopped;
 
-                case "exited":
                 case "dead":
                     return UpdateMethodType.Crashed;
 

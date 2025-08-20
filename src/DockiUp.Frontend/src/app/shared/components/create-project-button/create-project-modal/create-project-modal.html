@@ -38,21 +38,21 @@
 
       <form [formGroup]="projectOriginFormGroup" class="form-content">
         <mat-radio-group formControlName="originType" class="update-method-group">
-          <mat-radio-button [value]="ContainerOriginType.Compose" class="update-method-option">
+          <mat-radio-button [value]="ProjectOriginType.Compose" class="update-method-option">
             <div class="radio-content">
               <h3>Compose File (Recommended)</h3>
               <p>Define your application using a compose file</p>
             </div>
           </mat-radio-button>
 
-          <mat-radio-button [value]="ContainerOriginType.Git" class="update-method-option">
+          <mat-radio-button [value]="ProjectOriginType.Git" class="update-method-option">
             <div class="radio-content">
               <h3>Git URL</h3>
               <p>Clone your project directly from a Git URL</p>
             </div>
           </mat-radio-button>
 
-          <mat-radio-button [value]="ContainerOriginType.Local" class="update-method-option">
+          <mat-radio-button [value]="ProjectOriginType.Import" class="update-method-option">
             <div class="radio-content">
               <h3>Import Existing Project</h3>
               <p>Use a project already located on your server</p>
@@ -61,7 +61,7 @@
         </mat-radio-group>
 
         <!-- Git URL Input -->
-        @if (projectOriginFormGroup.get('originType')?.value === ContainerOriginType.Git) {
+        @if (projectOriginFormGroup.get('originType')?.value === ProjectOriginType.Git) {
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Git URL</mat-label>
           <input matInput placeholder="Enter Git repository URL" formControlName="gitUrl" required type="url">
@@ -72,7 +72,7 @@
         }
 
         <!-- Compose Content Input -->
-        @else if (projectOriginFormGroup.get('originType')?.value === ContainerOriginType.Compose) {
+        @else if (projectOriginFormGroup.get('originType')?.value === ProjectOriginType.Compose) {
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Compose File</mat-label>
           <textarea matInput placeholder="Paste compose file content here" rows="15" formControlName="composeContent"
@@ -84,7 +84,7 @@
         }
 
         <!-- Local Path Input -->
-        @else if (projectOriginFormGroup.get('originType')?.value === ContainerOriginType.Local) {
+        @else if (projectOriginFormGroup.get('originType')?.value === ProjectOriginType.Import) {
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Project Path</mat-label>
           <input matInput type="text" placeholder="Select or enter a path" formControlName="path"
@@ -107,7 +107,7 @@
       <ng-template matStepLabel>Update Method</ng-template>
       <form [formGroup]="updateMethodFormGroup" class="form-content">
         <mat-radio-group formControlName="updateMethod" class="update-method-group">
-          <mat-radio-button [value]="ContainerUpdateMethod.Webhook" class="update-method-option">
+          <mat-radio-button [value]="ProjectUpdateMethod.Webhook" class="update-method-option">
             <div class="radio-content">
               <h3>Use Webhook (Recommended)</h3>
               <p>Create a webhook in your Git repository to notify the system about new changes immediately.</p>
@@ -115,14 +115,14 @@
             </div>
           </mat-radio-button>
 
-          <mat-radio-button [value]="ContainerUpdateMethod.Manual" class="update-method-option">
+          <mat-radio-button [value]="ProjectUpdateMethod.Manual" class="update-method-option">
             <div class="radio-content">
               <h3>Update Manually</h3>
               <p>You will be prompted to update the container when you press a button.</p>
             </div>
           </mat-radio-button>
 
-          <mat-radio-button [value]="ContainerUpdateMethod.Periodically" class="update-method-option">
+          <mat-radio-button [value]="ProjectUpdateMethod.Periodically" class="update-method-option">
             <div class="radio-content">
               <h3>Check Periodically</h3>
               <p>The system will check for changes in the repository at regular intervals.</p>
@@ -131,7 +131,7 @@
         </mat-radio-group>
 
         <!-- Webhook URL input -->
-        @if (updateMethodFormGroup.get('updateMethod')?.value === ContainerUpdateMethod.Webhook) {
+        @if (updateMethodFormGroup.get('updateMethod')?.value === ProjectUpdateMethod.Webhook) {
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Webhook URL</mat-label>
           <input matInput placeholder="Enter webhook URL" formControlName="webhookUrl" required type="url">
@@ -145,7 +145,7 @@
         }
 
         <!-- Periodic interval input -->
-        @else if (updateMethodFormGroup.get('updateMethod')?.value === ContainerUpdateMethod.Periodically) {
+        @else if (updateMethodFormGroup.get('updateMethod')?.value === ProjectUpdateMethod.Periodically) {
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Check Interval (minutes)</mat-label>
           <input matInput placeholder="Interval in minutes" formControlName="periodicInterval" required type="number"

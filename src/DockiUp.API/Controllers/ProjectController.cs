@@ -20,9 +20,9 @@ namespace DockiUp.API.Controllers
         [HttpPost("DeployProject", Name = "DeployProject")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<ContainerDto>> DeployProject([FromBody] SetupProjectDto containerId)
+        public async Task<ActionResult<ContainerDto>> DeployProject([FromBody] SetupProjectDto setupDto)
         {
-            await _mediator.Send(new DeployProjectCommand(containerId));
+            await _mediator.Send(new DeployProjectCommand(setupDto), HttpContext.RequestAborted);
             return NoContent();
         }
 
@@ -31,7 +31,7 @@ namespace DockiUp.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<ProjectDto[]>> GetContainers()
         {
-            var container = await _mediator.Send(new GetProjectsQuery());
+            var container = await _mediator.Send(new GetProjectsQuery(), HttpContext.RequestAborted);
             return Ok(container);
         }
 
@@ -40,7 +40,7 @@ namespace DockiUp.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> StopProject()
         {
-            await _mediator.Send(new StopProjectCommand());
+            await _mediator.Send(new StopProjectCommand(), HttpContext.RequestAborted);
             return NoContent();
         }
     }

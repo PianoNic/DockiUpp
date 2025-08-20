@@ -1,10 +1,11 @@
-﻿using DockiUp.Domain;
+﻿using DockiUp.Application.Interfaces;
+using DockiUp.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
 namespace DockiUp.Infrastructure
 {
-    public class DockiUpDbContext : DbContext
+    public class DockiUpDbContext : DbContext, IDockiUpDbContext
     {
         public DbSet<ProjectInfo> ProjectInfo { get; set; }
 
@@ -14,10 +15,25 @@ namespace DockiUp.Infrastructure
         {
             base.OnModelCreating(modelBuilder);
 
-            //modelBuilder.Entity<ProjectInfo>(entity =>
-            //{
+            modelBuilder.Entity<ProjectInfo>();
+        }
 
-            //});
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var entries = ChangeTracker.Entries<EntityBase>();
+            foreach (var entry in entries)
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    entry.Entity.CreatedAt = DateTime.UtcNow;
+                    entry.Entity.UpdatedAt = DateTime.UtcNow;
+                }
+                else if (entry.State == EntityState.Modified)
+                {
+                    entry.Entity.UpdatedAt = DateTime.UtcNow;
+                }
+            }
+            return await base.SaveChangesAsync(cancellationToken);
         }
 
         public class DockiUpDbContextFactory : IDesignTimeDbContextFactory<DockiUpDbContext>

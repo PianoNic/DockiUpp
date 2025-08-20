@@ -20,7 +20,7 @@ namespace DockiUp.API.Controllers
         [ProducesResponseType(typeof(AppInfoDto), StatusCodes.Status200OK)]
         public async Task<ActionResult<AppInfoDto>> GetAppInfo()
         {
-            var appInfo = await _mediator.Send(new GetAppInfoQuery());
+            var appInfo = await _mediator.Send(new GetAppInfoQuery(), HttpContext.RequestAborted);
             return Ok(appInfo);
         }
     }
