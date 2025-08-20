@@ -19,6 +19,7 @@ namespace DockiUp.Infrastructure.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ProjectName = table.Column<string>(type: "text", nullable: false),
+                    DockerProjectName = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
                     ProjectOrigin = table.Column<int>(type: "integer", nullable: false),
                     GitUrl = table.Column<string>(type: "text", nullable: true),

@@ -40,6 +40,10 @@ namespace DockiUp.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<string>("DockerProjectName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("GitUrl")
                         .HasColumnType("text");
 

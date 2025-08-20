@@ -9,16 +9,20 @@ namespace DockiUp.Infrastructure.Services
     public class DockerService : IDockerService
     {
         private readonly IDockiUpDockerClient _dockiUpDockerClient;
+        private readonly IDockiUpDbContext _dbContext;
         private const string ComposeFileName = "dockiup_compose.yml";
-        public DockerService(IDockiUpDockerClient dockiUpDockerClient)
+        public DockerService(IDockiUpDockerClient dockiUpDockerClient, IDockiUpDbContext dbContext)
         {
             _dockiUpDockerClient = dockiUpDockerClient;
+            _dbContext = dbContext;
         }
 
         public async Task<ProjectDto[]> GetProjectsAsync()
         {
             var containers = await _dockiUpDockerClient.DockerClient.Containers
                 .ListContainersAsync(new ContainersListParameters { All = true });
+
+            var dbContainers = _dbContext.ProjectInfo.ToDictionary(a => a.DockerProjectName);
 
             return containers
                 .Select(container =>
@@ -32,7 +36,7 @@ namespace DockiUp.Infrastructure.Services
                         return new ContainerDto
                         {
                             Id = container.ID,
-                            Name = container.Names.SingleOrDefault().TrimStart('/') ?? string.Empty,
+                            Name = container.Names.Single().TrimStart('/') ?? string.Empty,
                             Status = container.Status,
                             State = container.State.ToEnum(),
                             ProjectName = projectName,
@@ -43,13 +47,18 @@ namespace DockiUp.Infrastructure.Services
                 .Where(dto => dto != null)
                 .GroupBy(containerDto => containerDto.ProjectName)
                 .Select(group =>
-                    new ProjectDto
+                {
+                    bool success = dbContainers.TryGetValue(group.Key, out var output);
+
+                    return new ProjectDto
                     {
-                        Name = group.Key,
+                        ProjectName = success ? output.ProjectName : group.Key,
+                        ProjectDescription = success ? output.Description : "Not Managed By DockiUp",
+                        ManagedByDockiUp = success,
+                        DockerProjectName = group.Key,
                         Containers = group.ToArray()
-                    }
-                )
-                .ToArray();
+                    };
+                }).ToArray();
         }
 
         public async Task StartProjectAsync(string folderPath)
@@ -81,8 +90,7 @@ namespace DockiUp.Infrastructure.Services
             }
             else
             {
-                Console.WriteLine($"Docker Compose failed");
-                Console.WriteLine(error);
+                throw new ArgumentException($"Docker Compose failed", error);
             }
         }
 

@@ -5,6 +5,7 @@ namespace DockiUp.Domain
     public class ProjectInfo : EntityBase
     {
         public required string ProjectName { get; set; }
+        public required string DockerProjectName { get; set; }
         public string? Description { get; set; }
 
         public required ProjectOriginType ProjectOrigin { get; set; }

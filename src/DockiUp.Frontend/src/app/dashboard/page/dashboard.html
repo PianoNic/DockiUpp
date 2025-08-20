@@ -1,12 +1,16 @@
 <div class="container-wrapper">
   <div class="flex-header">
     <h1 class="dashboard-title">Dashboard</h1>
+    <span style="flex:1"></span>
+    @if (projects().length !== 0 && projectStore.loading()) {
+    <mat-progress-spinner diameter="28" mode="indeterminate" color="primary" />
+    }
   </div>
 
   <div class="status-cards">
     <mat-card class="status-card total">
       <mat-card-header class="centered-flexbox">
-        <mat-icon mat-card-avatar class="centered-logo">devices</mat-icon>
+        <mat-icon mat-card-avatar class="centered-logo">layers</mat-icon>
       </mat-card-header>
       <mat-card-content class="card-content">
         <span class="count">{{ projects().length }}</span>
@@ -59,27 +63,35 @@
         <mat-card-title>Crashed</mat-card-title>
       </mat-card-header>
       <mat-card-content class="card-content">
-        <span class="count">{{ containerStats().failed }}</span>
+        <span class="count">{{ containerStats().crashed }}</span>
       </mat-card-content>
     </mat-card>
   </div>
 
-  @if (!dashboardStore.loading()) {
+  @if (projects().length !== 0) {
   <div class="container-list">
-    @for (project of projects(); track project.name) {
+    @for (project of projects(); track project.projectName) {
     <mat-card appearance="outlined">
       <mat-card-header>
         <mat-icon mat-card-avatar class="centered-logo">
           {{ getStatusIcon(project?.containers?.[0]?.state) }}
         </mat-icon>
-        <mat-card-title>{{ project.name }}</mat-card-title>
+        <mat-card-title-group>
+          <mat-card-title>{{ project.projectName }}</mat-card-title>
+          <mat-card-subtitle class="project-description">
+            {{ project.projectDescription }}
+          </mat-card-subtitle>
+        </mat-card-title-group>
       </mat-card-header>
       <mat-card-content>
         <p>Containers: {{ getRunningCount(project) }}/{{ getTotalCount(project) }} running</p>
       </mat-card-content>
       <mat-card-actions>
-        <button mat-button [routerLink]="['/project', project.name]">View</button>
-        <button mat-button [routerLink]="['/edit-project', project.name]">Edit</button>
+        <button mat-button [routerLink]="['/project', project.projectName]"
+          [disabled]="!project.managedByDockiUp">View</button>
+        @if(!project.managedByDockiUp){
+        <button mat-button [routerLink]="['/migrate', project.projectName]">Migrate</button>
+        }
       </mat-card-actions>
     </mat-card>
     }
@@ -95,16 +107,9 @@
   </div>
   }
 
-  @if (dashboardStore.loading()) {
+  @if (projects().length === 0 && projectStore.loading()) {
   <div class="loading-state">
-    <p>Loading compose stacks...</p>
+    <mat-progress-bar mode="indeterminate" />
   </div>
   }
-
-  <!-- @if (error()) {
-    <div class="error-state">
-      <p>Error loading containers: {{ error() }}</p>
-      <button mat-button (click)="loadContainers()">Retry</button>
-    </div>
-  } -->
 </div>

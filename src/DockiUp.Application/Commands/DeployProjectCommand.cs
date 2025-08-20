@@ -61,6 +61,7 @@ namespace DockiUp.Application.Commands
             var projectInfo = new ProjectInfo
             {
                 ProjectName = request.SetupContainerDto.ProjectName,
+                DockerProjectName = new string(request.SetupContainerDto.ProjectName.ToLower().Where(c => !char.IsWhiteSpace(c)).ToArray()),
                 Description = request.SetupContainerDto.Description,
 
                 ProjectOrigin = request.SetupContainerDto.ProjectOrigin,
@@ -84,6 +85,7 @@ namespace DockiUp.Application.Commands
             var projectInfo = new ProjectInfo
             {
                 ProjectName = request.SetupContainerDto.ProjectName,
+                DockerProjectName = new string(request.SetupContainerDto.ProjectName.ToLower().Where(c => !char.IsWhiteSpace(c)).ToArray()),
                 Description = request.SetupContainerDto.Description,
 
                 ProjectOrigin = request.SetupContainerDto.ProjectOrigin,

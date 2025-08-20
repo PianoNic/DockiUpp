@@ -1,12 +1,14 @@
-import { Component, signal, OnInit, inject, computed } from '@angular/core';
+import { Component, OnInit, inject, computed } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { CreateProjectButton } from '../../shared/components/create-project-button/button/create-project-button';
-import { DashboardStore } from '../store/dashboard.store';
-import { ProjectDto, ContainerDto, UpdateMethodType } from '../../api';
+import { ProjectDto, UpdateMethodType } from '../../api';
+import { MatProgressBar } from "@angular/material/progress-bar";
+import { ProjectStore } from '../../shared/stores/project.store';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-dashboard',
@@ -16,14 +18,16 @@ import { ProjectDto, ContainerDto, UpdateMethodType } from '../../api';
     MatIconModule,
     RouterLink,
     MatButtonModule,
-    CreateProjectButton
-  ],
+    CreateProjectButton,
+    MatProgressBar,
+    MatProgressSpinnerModule
+],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
 export class Dashboard implements OnInit {
-  dashboardStore = inject(DashboardStore);
-  projects = this.dashboardStore.projectDtos;
+  projectStore = inject(ProjectStore);
+  projects = this.projectStore.projectDtos;
 
   getRunningCount(project: ProjectDto): number {
     return (project.containers || []).filter(c => c.state === UpdateMethodType.Running).length;
@@ -34,7 +38,7 @@ export class Dashboard implements OnInit {
   }
 
   async ngOnInit() {
-    await this.dashboardStore.loadContainers();
+    await this.projectStore.loadContainers();
   }
 
   getStatusIcon(status?: UpdateMethodType): string {
@@ -62,7 +66,7 @@ export class Dashboard implements OnInit {
       running: allContainers.filter(c => c.state === UpdateMethodType.Running).length,
       needsUpdate: allContainers.filter(c => c.state === UpdateMethodType.Updating).length,
       updating: allContainers.filter(c => c.state === UpdateMethodType.Updating).length,
-      failed: allContainers.filter(c => c.state === UpdateMethodType.Crashed).length,
+      crashed: allContainers.filter(c => c.state === UpdateMethodType.Crashed).length,
     };
   });
 }

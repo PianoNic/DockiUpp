@@ -11,7 +11,10 @@ import { ContainerDto } from './containerDto';
 
 
 export interface ProjectDto { 
-    name: string | null;
+    projectName: string | null;
+    dockerProjectName: string | null;
+    projectDescription: string | null;
+    managedByDockiUp: boolean;
     containers: Array<ContainerDto> | null;
 }
 

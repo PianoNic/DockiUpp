@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DockiUp.Infrastructure.Migrations
 {
     [DbContext(typeof(DockiUpDbContext))]
-    [Migration("20250820145156_Init")]
+    [Migration("20250820201526_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -41,6 +41,10 @@ namespace DockiUp.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("DockerProjectName")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("GitUrl")

@@ -8,6 +8,7 @@ import { CreateProjectModal } from '../create-project-modal/create-project-modal
 import { ProjectService, SetupProjectDto } from '../../../../api';
 import { firstValueFrom } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ProjectStore } from '../../../stores/project.store';
 @Component({
   selector: 'app-create-project-button',
   imports: [
@@ -21,6 +22,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 })
 export class CreateProjectButton {
   projectService = inject(ProjectService)
+  projectStore = inject(ProjectStore);
   destroyRef = inject(DestroyRef);
 
   constructor(
@@ -32,8 +34,7 @@ export class CreateProjectButton {
 
     dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(async (result: SetupProjectDto | undefined) => {
       console.log(result);
-
-      await firstValueFrom(this.projectService.deployProject(result));
+      await this.projectStore.deployProject(result!);
     });
   }
 }
