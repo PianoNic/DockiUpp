@@ -1,0 +1,41 @@
+<h1>{{project()?.projectName ?? "no"}} - {{project()?.projectDescription ?? "no"}}</h1>
+
+<mat-card appearance="outlined" class="main-card">
+  <mat-card-subtitle class="project-description">
+    Containers: {{ getRunningCount() }}/{{ project()?.containers?.length }} running
+  </mat-card-subtitle>
+  <div class="card-content-flex">
+
+    <!-- Left: Container Area -->
+    <div class="containers-list">
+      @for (container of project()?.containers; track container.name) {
+      <mat-card appearance="outlined">
+        <mat-card-header>
+          <mat-card-title-group>
+            <mat-card-title>{{ container.name }}</mat-card-title>
+          </mat-card-title-group>
+        </mat-card-header>
+        <mat-card-content>
+          <div>Status: {{ container.status }}</div>
+          <div>State: {{ container.state }}</div>
+        </mat-card-content>
+      </mat-card>
+      }
+    </div>
+
+    <!-- Right: Console Area -->
+    <div class="console-area">
+      <div class="console-output">
+        <pre>{{consoleText}}</pre>
+      </div>
+      <mat-form-field appearance="outline" class="console-input">
+        <input matInput placeholder="Type command..." [(ngModel)]="consoleInput" />
+      </mat-form-field>
+      <div class="console-buttons">
+        <button matButton="outlined" color="primary" (click)="onStart()">Start</button>
+        <button matButton="outlined" color="accent" (click)="onRestart()">Restart</button>
+        <button matButton="outlined" color="warn" (click)="onStop()">Stop</button>
+      </div>
+    </div>
+  </div>
+</mat-card>

@@ -4,11 +4,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
-import { CreateProjectButton } from '../../shared/components/create-project-button/button/create-project-button';
-import { ProjectDto, UpdateMethodType } from '../../api';
 import { MatProgressBar } from "@angular/material/progress-bar";
-import { ProjectStore } from '../../shared/stores/project.store';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ProjectDto, UpdateMethodType } from '../api';
+import { CreateProjectButton } from '../shared/components/create-project-button/button/create-project-button';
+import { ProjectStore } from '../shared/stores/project.store';
 
 @Component({
   selector: 'app-dashboard',

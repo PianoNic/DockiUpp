@@ -87,10 +87,10 @@
         <p>Containers: {{ getRunningCount(project) }}/{{ getTotalCount(project) }} running</p>
       </mat-card-content>
       <mat-card-actions>
-        <button mat-button [routerLink]="['/project', project.projectName]"
+        <button mat-button [routerLink]="['/project', project.dockerProjectName]"
           [disabled]="!project.managedByDockiUp">View</button>
         @if(!project.managedByDockiUp){
-        <button mat-button [routerLink]="['/migrate', project.projectName]">Migrate</button>
+        <button mat-button [routerLink]="['/migrate', project.dockerProjectName]">Migrate</button>
         }
       </mat-card-actions>
     </mat-card>

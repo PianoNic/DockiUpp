@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DockiUp.Infrastructure.Migrations
 {
     [DbContext(typeof(DockiUpDbContext))]
-    [Migration("20250820201526_Init")]
+    [Migration("20250821053348_Init")]
     partial class Init
     {
         /// <inheritdoc />
