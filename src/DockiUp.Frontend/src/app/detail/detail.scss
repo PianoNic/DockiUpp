@@ -64,3 +64,12 @@
   color: rgb(65, 65, 65);
   margin-bottom: 10px;
 }
+
+.content-flex{
+  display: flex;
+  flex-direction: row;
+}
+
+.status{
+  flex-grow: 1;
+}

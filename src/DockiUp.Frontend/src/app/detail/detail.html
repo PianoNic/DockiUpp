@@ -15,10 +15,32 @@
             <mat-card-title>{{ container.name }}</mat-card-title>
           </mat-card-title-group>
         </mat-card-header>
-        <mat-card-content>
-          <div>Status: {{ container.status }}</div>
-          <div>State: {{ container.state }}</div>
+        <mat-card-content class="content-flex">
+          <div class="status">
+            <div>Status: {{ container.status }}</div>
+            <div>State: {{ container.state }}</div>
+          </div>
+          <div>
+            <button mat-icon-button [matMenuTriggerFor]="containerMenu" class="container-menu-btn">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #containerMenu="matMenu">
+              <button mat-menu-item (click)="onStart()" [disabled]="container.state !== UpdateMethodType.Stopped">
+                <mat-icon>play_arrow</mat-icon>
+                <span>Start</span>
+              </button>
+              <button mat-menu-item (click)="onStop()" [disabled]="container.state === UpdateMethodType.Stopped">
+                <mat-icon>stop</mat-icon>
+                <span>Stop</span>
+              </button>
+              <button mat-menu-item (click)="onRestart()" [disabled]="container.state === UpdateMethodType.Stopped">
+                <mat-icon>refresh</mat-icon>
+                <span>Restart</span>
+              </button>
+            </mat-menu>
+          </div>
         </mat-card-content>
+
       </mat-card>
       }
     </div>

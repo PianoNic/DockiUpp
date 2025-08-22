@@ -5,6 +5,8 @@ import { MatCardModule } from "@angular/material/card";
 import { MatInputModule } from "@angular/material/input";
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
 import { ContainerDto, ProjectDto, UpdateMethodType } from '../api';
 
 @Component({
@@ -13,7 +15,9 @@ import { ContainerDto, ProjectDto, UpdateMethodType } from '../api';
     MatCardModule,
     MatInputModule,
     FormsModule,
-    MatButtonModule
+    MatButtonModule,
+    MatMenuModule,
+    MatIconModule
 ],
   templateUrl: './detail.html',
   styleUrl: './detail.scss'
@@ -22,6 +26,8 @@ export class Detail implements OnInit {
   private route = inject(ActivatedRoute);
   public projectStore = inject(ProjectStore);
   readonly dockerId = this.route.snapshot.paramMap.get('id');
+
+  UpdateMethodType = UpdateMethodType;
 
   async ngOnInit() {
     await this.projectStore.loadContainers();
