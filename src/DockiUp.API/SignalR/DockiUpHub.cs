@@ -1,6 +1,7 @@
-﻿namespace DockiUp.API.SignalR
+using Microsoft.AspNetCore.SignalR;
+
+namespace DockiUp.API.SignalR;
+
+public class DockiUpHub : Hub
 {
-    public class DockiUpHub
-    {
-    }
 }

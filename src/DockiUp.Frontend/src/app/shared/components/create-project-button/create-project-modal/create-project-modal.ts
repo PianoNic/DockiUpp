@@ -8,7 +8,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { ProjectOriginType, ProjectUpdateMethod, SetupProjectDto, UpdateMethodType } from '../../../../api';
+import { SetupProjectDto } from '../../../../api';
+import { ProjectOriginType, ProjectUpdateMethod, UpdateMethodType } from '../../../models/api-enums';
 
 
 @Component({

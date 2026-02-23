@@ -1,4 +1,4 @@
-﻿using DockiUp.Application.Interfaces;
+using DockiUp.Application.Interfaces;
 using DockiUp.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
@@ -15,7 +15,10 @@ namespace DockiUp.Infrastructure
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<ProjectInfo>();
+            modelBuilder.Entity<ProjectInfo>(e =>
+            {
+                e.Property(p => p.LastPeriodicUpdateAt);
+            });
         }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

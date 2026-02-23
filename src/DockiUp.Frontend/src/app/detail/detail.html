@@ -1,63 +1,95 @@
-<h1>{{project()?.projectName ?? "no"}} - {{project()?.projectDescription ?? "no"}}</h1>
+<h1>{{ project()?.projectName ?? 'Project' }} – {{ project()?.projectDescription ?? '' }}</h1>
 
-<mat-card appearance="outlined" class="main-card">
-  <mat-card-subtitle class="project-description">
-    Containers: {{ getRunningCount() }}/{{ project()?.containers?.length }} running
-  </mat-card-subtitle>
-  <div class="card-content-flex">
-
-    <!-- Left: Container Area -->
-    <div class="containers-list">
-      @for (container of project()?.containers; track container.name) {
-      <mat-card appearance="outlined">
-        <mat-card-header>
-          <mat-card-title-group>
-            <mat-card-title>{{ container.name }}</mat-card-title>
-          </mat-card-title-group>
-        </mat-card-header>
-        <mat-card-content class="content-flex">
-          <div class="status">
-            <div>Status: {{ container.status }}</div>
-            <div>State: {{ container.state }}</div>
-          </div>
-          <div>
-            <button mat-icon-button [matMenuTriggerFor]="containerMenu" class="container-menu-btn">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #containerMenu="matMenu">
-              <button mat-menu-item (click)="onStart()" [disabled]="container.state !== UpdateMethodType.Stopped">
-                <mat-icon>play_arrow</mat-icon>
-                <span>Start</span>
-              </button>
-              <button mat-menu-item (click)="onStop()" [disabled]="container.state === UpdateMethodType.Stopped">
-                <mat-icon>stop</mat-icon>
-                <span>Stop</span>
-              </button>
-              <button mat-menu-item (click)="onRestart()" [disabled]="container.state === UpdateMethodType.Stopped">
-                <mat-icon>refresh</mat-icon>
-                <span>Restart</span>
-              </button>
-            </mat-menu>
-          </div>
-        </mat-card-content>
-
-      </mat-card>
-      }
-    </div>
-
-    <!-- Right: Console Area -->
-    <div class="console-area">
-      <div class="console-output">
-        <pre>{{consoleText}}</pre>
-      </div>
-      <mat-form-field appearance="outline" class="console-input">
-        <input matInput placeholder="Type command..." [(ngModel)]="consoleInput" />
-      </mat-form-field>
-      <div class="console-buttons">
-        <button matButton="outlined" color="primary" (click)="onStart()">Start</button>
-        <button matButton="outlined" color="accent" (click)="onRestart()">Restart</button>
-        <button matButton="outlined" color="warn" (click)="onStop()">Stop</button>
-      </div>
-    </div>
+@if (project(); as p) {
+  <div class="project-actions">
+    <button mat-raised-button color="warn" (click)="onStopProject()" [disabled]="projectStore.loading()">
+      Stop project
+    </button>
+    <button mat-raised-button color="accent" (click)="onRestartProject()" [disabled]="projectStore.loading()">
+      Restart project
+    </button>
+    @if (canUpdateProject()) {
+      <button mat-raised-button color="primary" (click)="onUpdateProject()" [disabled]="projectStore.loading()">
+        Update (pull &amp; restart)
+      </button>
+    }
+    @if (projectStore.loading()) {
+      <mat-spinner diameter="24"></mat-spinner>
+    }
   </div>
-</mat-card>
+
+  <mat-card appearance="outlined" class="main-card">
+    <mat-card-subtitle class="project-description">
+      Containers: {{ getRunningCount() }}/{{ p.containers.length }} running
+    </mat-card-subtitle>
+    <div class="card-content-flex">
+      <div class="containers-list">
+        @for (container of p.containers; track container.id) {
+          <mat-card appearance="outlined">
+            <mat-card-header>
+              <mat-icon mat-card-avatar class="centered-logo">{{ getStatusIcon(container.state) }}</mat-icon>
+              <mat-card-title-group>
+                <mat-card-title>{{ container.name }}</mat-card-title>
+              </mat-card-title-group>
+            </mat-card-header>
+            <mat-card-content class="content-flex">
+              <div class="status">
+                <div>Status: {{ container.status }}</div>
+                <div>State: {{ container.state }}</div>
+              </div>
+              <div>
+                <button mat-icon-button [matMenuTriggerFor]="containerMenu" class="container-menu-btn">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #containerMenu="matMenu">
+                  <button mat-menu-item (click)="onStartContainer(container)" [disabled]="getContainerState(container) !== UpdateMethodType.Stopped">
+                    <mat-icon>play_arrow</mat-icon>
+                    <span>Start</span>
+                  </button>
+                  <button mat-menu-item (click)="onStopContainer(container)" [disabled]="getContainerState(container) === UpdateMethodType.Stopped">
+                    <mat-icon>stop</mat-icon>
+                    <span>Stop</span>
+                  </button>
+                  <button mat-menu-item (click)="onRestartContainer(container)" [disabled]="getContainerState(container) === UpdateMethodType.Stopped">
+                    <mat-icon>refresh</mat-icon>
+                    <span>Restart</span>
+                  </button>
+                </mat-menu>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+
+      <div class="console-area">
+        <div class="console-toolbar">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="console-select">
+            <mat-label>Container logs</mat-label>
+            <mat-select
+              [value]="selectedContainerId()"
+              (selectionChange)="selectedContainerId.set($event.value); loadConsoleLogs()"
+              placeholder="Select container">
+              <mat-option value="">All containers</mat-option>
+              @for (container of p.containers; track container.id) {
+                <mat-option [value]="container.id">{{ container.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <button mat-raised-button color="primary" (click)="loadConsoleLogs()" [disabled]="logsLoading()">
+            <mat-icon>refresh</mat-icon>
+            Refresh
+          </button>
+        </div>
+        <div class="console-output" #logContainer>
+          @if (logsLoading()) {
+            <mat-spinner diameter="24"></mat-spinner>
+          } @else {
+            <pre>{{ consoleLogs() || 'Select "All containers" or a container and click Refresh to view logs.' }}</pre>
+          }
+        </div>
+      </div>
+    </div>
+  </mat-card>
+} @else {
+  <p>Project not found.</p>
+}

@@ -1,5 +1,5 @@
 /**
- * DockiUp.API
+ * DockiUp.API | v1
  *
  * 
  *
@@ -7,14 +7,18 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { ProblemDetailsStatus } from './problemDetailsStatus';
 import { ContainerDto } from './containerDto';
 
 
 export interface ProjectDto { 
-    projectName: string | null;
-    dockerProjectName: string | null;
-    projectDescription: string | null;
+    id?: ProblemDetailsStatus | null;
+    projectName: string;
+    dockerProjectName: string;
+    projectDescription: string;
     managedByDockiUp: boolean;
-    containers: Array<ContainerDto> | null;
+    containers: Array<ContainerDto>;
+    projectPath?: string | null;
+    updateMethod?: string | null;
 }
 

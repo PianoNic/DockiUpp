@@ -1,5 +1,5 @@
 /**
- * DockiUp.API
+ * DockiUp.API | v1
  *
  * 
  *
@@ -7,15 +7,13 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { ProblemDetailsStatus } from './problemDetailsStatus';
 
 
 export interface ProblemDetails { 
-  [key: string]: any | any;
-
-
     type?: string | null;
     title?: string | null;
-    status?: number | null;
+    status?: ProblemDetailsStatus | null;
     detail?: string | null;
     instance?: string | null;
 }

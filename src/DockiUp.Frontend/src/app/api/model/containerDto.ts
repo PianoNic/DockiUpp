@@ -1,5 +1,5 @@
 /**
- * DockiUp.API
+ * DockiUp.API | v1
  *
  * 
  *
@@ -7,18 +7,14 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { UpdateMethodType } from './updateMethodType';
 
 
 export interface ContainerDto { 
-    id: string | null;
-    name: string | null;
-    status: string | null;
-    state: UpdateMethodType;
-    serviceName: string | null;
-    projectName: string | null;
+    id: string;
+    name: string;
+    status: string;
+    state: number;
+    serviceName: string;
+    projectName: string;
 }
-export namespace ContainerDto {
-}
-
 

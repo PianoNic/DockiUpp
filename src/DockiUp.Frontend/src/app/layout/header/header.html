@@ -1,0 +1,28 @@
+<mat-toolbar color="primary" class="header">
+  <button mat-icon-button class="hamburger-menu" (click)="onMenuToggle()">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <span class="app-title">DockiUp</span>
+
+  <span class="spacer"></span>
+
+  <app-create-project-button />
+
+  <div class="user-menu-container">
+    <button mat-button class="user-button" (click)="toggleUserMenu()">
+      <span>User</span>
+      <mat-icon>account_circle</mat-icon>
+    </button>
+    @if (userMenuOpen()) {
+      <div class="user-dropdown">
+        <div class="user-info">
+          <div class="user-name">User</div>
+          <div class="user-email">DockiUp</div>
+        </div>
+        <div class="dropdown-divider"></div>
+        <app-theme-toggle />
+      </div>
+    }
+  </div>
+</mat-toolbar>

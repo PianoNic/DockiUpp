@@ -7,7 +7,7 @@
       "typescript-angular": {
         "generatorName": "typescript-angular",
         "output": "src/app/api",
-        "inputSpec": "http://localhost:5098/swagger/v1/swagger.json"
+        "inputSpec": "http://localhost:5098/openapi/v1.json"
       }
     }
   }

@@ -1,0 +1,76 @@
+.header {
+  background-color: var(--mat-sys-surface-container-low);
+  color: var(--mat-sys-primary);
+}
+
+.hamburger-menu {
+  color: var(--mat-sys-primary) !important;
+}
+
+.app-title {
+  font-family: "Shrikhand", serif;
+  margin-left: 1rem;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.user-menu-container {
+  position: relative;
+}
+
+.user-button {
+  color: var(--mat-sys-on-surface) !important;
+  flex-direction: row-reverse !important;
+  gap: 12px !important;
+  font-size: 1.1rem !important;
+
+  mat-icon {
+    font-size: 1.3rem !important;
+    width: 1.3rem !important;
+    height: 1.3rem !important;
+  }
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: var(--mat-sys-surface);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: var(--mat-sys-corner-medium);
+  box-shadow: var(--mat-sys-level3);
+  min-width: 200px;
+  z-index: 100;
+  margin-top: 8px;
+}
+
+.user-info {
+  padding: 12px 16px;
+
+  .user-name {
+    font: var(--mat-sys-title-small);
+    color: var(--mat-sys-on-surface);
+  }
+
+  .user-email {
+    font: var(--mat-sys-body-small);
+    color: var(--mat-sys-on-surface-variant);
+    margin-top: 4px;
+  }
+}
+
+.dropdown-divider {
+  height: 1px;
+  background-color: var(--mat-sys-outline-variant);
+}
+
+.user-dropdown app-theme-toggle {
+  display: flex;
+  width: 100%;
+
+  .theme-toggle {
+    width: 100%;
+  }
+}

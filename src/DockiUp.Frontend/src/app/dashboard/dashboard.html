@@ -70,11 +70,11 @@
 
   @if (projects().length !== 0) {
   <div class="container-list">
-    @for (project of projects(); track project.projectName) {
+    @for (project of projects(); track project.dockerProjectName) {
     <mat-card appearance="outlined">
       <mat-card-header>
         <mat-icon mat-card-avatar class="centered-logo">
-          {{ getStatusIcon(project?.containers?.[0]?.state) }}
+          {{ getProjectStatusIcon(project) }}
         </mat-icon>
         <mat-card-title-group>
           <mat-card-title>{{ project.projectName }}</mat-card-title>
@@ -87,23 +87,44 @@
         <p>Containers: {{ getRunningCount(project) }}/{{ getTotalCount(project) }} running</p>
       </mat-card-content>
       <mat-card-actions>
-        <button mat-button [routerLink]="['/project', project.dockerProjectName]"
-          [disabled]="!project.managedByDockiUp">View</button>
-        @if(!project.managedByDockiUp){
-        <button mat-button [routerLink]="['/migrate', project.dockerProjectName]">Migrate</button>
-        }
+        <button mat-button [routerLink]="['/project', project.dockerProjectName]">View</button>
+        <button mat-icon-button [matMenuTriggerFor]="projectMenu">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #projectMenu="matMenu">
+          <a mat-menu-item [routerLink]="['/project', project.dockerProjectName]">
+            <mat-icon>visibility</mat-icon>
+            <span>View</span>
+          </a>
+          <button mat-menu-item (click)="onStopProject(project)" [disabled]="projectStore.loading()">
+            <mat-icon>stop</mat-icon>
+            <span>Stop project</span>
+          </button>
+          <button mat-menu-item (click)="onRestartProject(project)" [disabled]="projectStore.loading()">
+            <mat-icon>refresh</mat-icon>
+            <span>Restart project</span>
+          </button>
+          @if (canUpdateProject(project)) {
+            <button mat-menu-item (click)="onUpdateProject(project)" [disabled]="projectStore.loading()">
+              <mat-icon>system_update</mat-icon>
+              <span>Update (pull &amp; restart)</span>
+            </button>
+          }
+        </mat-menu>
       </mat-card-actions>
     </mat-card>
     }
+  </div>
+  }
 
-    @if (projects().length === 0) {
+  @if (projects().length === 0 && !projectStore.loading()) {
+  <div class="container-list">
     <mat-card class="empty-state">
       <mat-card-content>
         <p>No compose stacks found. Add your first compose stack to get started.</p>
         <app-create-project-button />
       </mat-card-content>
     </mat-card>
-    }
   </div>
   }
 

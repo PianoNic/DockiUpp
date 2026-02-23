@@ -17,7 +17,7 @@ namespace DockiUp.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.8")
+                .HasAnnotation("ProductVersion", "10.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -46,6 +46,9 @@ namespace DockiUp.Infrastructure.Migrations
 
                     b.Property<string>("GitUrl")
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("LastPeriodicUpdateAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int?>("PeriodicIntervalInMinutes")
                         .HasColumnType("integer");

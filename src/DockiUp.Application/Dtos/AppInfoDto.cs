@@ -1,8 +1,8 @@
-﻿namespace DockiUp.Application.Dtos
+namespace DockiUp.Application.Dtos
 {
     public class AppInfoDto
     {
-        public string Version { get; set; }
-        public string Environment { get; set; }
+        public required string Version { get; set; }
+        public required string Environment { get; set; }
     }
 }

@@ -1,0 +1,12 @@
+<div
+  class="theme-toggle"
+  role="button"
+  tabindex="0"
+  (click)="toggleTheme()"
+  (keydown.enter)="toggleTheme()"
+  (keydown.space)="toggleTheme()"
+  [attr.aria-label]="ariaLabel()"
+>
+  <mat-icon>{{ icon() }}</mat-icon>
+  <span class="label">{{ label() }}</span>
+</div>

@@ -1,14 +1,14 @@
-﻿using DockiUp.Application.Dtos;
+using DockiUp.Application.Dtos;
 using DockiUp.Application.Interfaces;
 using DockiUp.Application.Models;
 using DockiUp.Domain;
 using DockiUp.Domain.Enums;
-using MediatR;
+using Mediator;
 using Microsoft.Extensions.Options;
 
 namespace DockiUp.Application.Commands
 {
-    public class DeployProjectCommand : IRequest
+    public sealed class DeployProjectCommand : IRequest
     {
         public DeployProjectCommand(SetupProjectDto setupContainerDto)
         {
@@ -18,7 +18,7 @@ namespace DockiUp.Application.Commands
         public SetupProjectDto SetupContainerDto { get; set; }
     }
 
-    public class DeployProjectCommandHandler : IRequestHandler<DeployProjectCommand>
+    public sealed class DeployProjectCommandHandler : IRequestHandler<DeployProjectCommand>
     {
         private readonly IDockerService _dockerService;
         private readonly IDockiUpDbContext _dbContext;
@@ -33,7 +33,7 @@ namespace DockiUp.Application.Commands
             _dbContext = dbContext;
         }
 
-        public async Task Handle(DeployProjectCommand request, CancellationToken cancellationToken)
+        public async ValueTask<Unit> Handle(DeployProjectCommand request, CancellationToken cancellationToken)
         {
             string containerFolderPath = Path.Combine(_systemPaths.ProjectsPath, request.SetupContainerDto.ProjectName);
             Directory.CreateDirectory(containerFolderPath);
@@ -50,12 +50,14 @@ namespace DockiUp.Application.Commands
             {
 
             }
+
+            return default;
         }
 
         private async Task HandleGitProjectDeploymentAsync(DeployProjectCommand request, string containerFolderPath, CancellationToken cancellationToken)
         {
-            await _projectConfigurationService.CloneRepositoryAsync(containerFolderPath, request.SetupContainerDto.GitUrl);
-            var composeFilePath = await _projectConfigurationService.WriteComposeFileAsync(containerFolderPath, request.SetupContainerDto.Compose);
+            await _projectConfigurationService.CloneRepositoryAsync(containerFolderPath, request.SetupContainerDto.GitUrl!);
+            var composeFilePath = await _projectConfigurationService.WriteComposeFileAsync(containerFolderPath, request.SetupContainerDto.Compose!);
             await _dockerService.StartProjectAsync(containerFolderPath);
 
             var projectInfo = new ProjectInfo
@@ -79,7 +81,7 @@ namespace DockiUp.Application.Commands
 
         private async Task HandleComposeProjectDeploymentAsync(DeployProjectCommand request, string containerFolderPath, CancellationToken cancellationToken)
         {
-            var composeFilePath = await _projectConfigurationService.WriteComposeFileAsync(containerFolderPath, request.SetupContainerDto.Compose);
+            var composeFilePath = await _projectConfigurationService.WriteComposeFileAsync(containerFolderPath, request.SetupContainerDto.Compose!);
             await _dockerService.StartProjectAsync(containerFolderPath);
 
             var projectInfo = new ProjectInfo

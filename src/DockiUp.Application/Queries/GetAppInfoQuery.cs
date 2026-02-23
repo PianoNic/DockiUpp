@@ -1,24 +1,24 @@
-﻿using DockiUp.Application.Dtos;
-using MediatR;
+using DockiUp.Application.Dtos;
+using Mediator;
 
 namespace DockiUp.Application.Queries
 {
-    public class GetAppInfoQuery : IRequest<AppInfoDto>
+    public sealed class GetAppInfoQuery : IRequest<AppInfoDto>
     {
         public GetAppInfoQuery()
         {
         }
     }
 
-    public class GetAppInfoQueryHandler : IRequestHandler<GetAppInfoQuery, AppInfoDto>
+    public sealed class GetAppInfoQueryHandler : IRequestHandler<GetAppInfoQuery, AppInfoDto>
     {
         public GetAppInfoQueryHandler()
         {
         }
 
-        public async Task<AppInfoDto> Handle(GetAppInfoQuery request, CancellationToken cancellationToken)
+        public ValueTask<AppInfoDto> Handle(GetAppInfoQuery request, CancellationToken cancellationToken)
         {
-            return await Task.FromResult(new AppInfoDto() { Environment = "Dev", Version = "v1.0.0" });
+            return new ValueTask<AppInfoDto>(new AppInfoDto() { Environment = "Dev", Version = "v1.0.0" });
         }
     }
 }

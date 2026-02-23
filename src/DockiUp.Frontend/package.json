@@ -9,7 +9,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "build:agent": "ng build --aot --configuration production --output-path",
-    "apigen": "npx openapi-generator-cli generate"
+    "apigen": "npx openapi-generator-cli generate",
+    "apigen:live": "npx openapi-generator-cli generate --input-spec=http://localhost:5098/openapi/v1.json --generator-name=typescript-angular --output=src/app/api"
   },
   "prettier": {
     "printWidth": 100,
@@ -25,6 +26,7 @@
   },
   "private": true,
   "dependencies": {
+    "@angular/animations": "^20.1.0",
     "@angular/cdk": "^20.1.6",
     "@angular/common": "^20.1.0",
     "@angular/compiler": "^20.1.0",
@@ -35,6 +37,7 @@
     "@angular/router": "^20.1.0",
     "@fortawesome/angular-fontawesome": "^3.0.0",
     "@fortawesome/free-brands-svg-icons": "^7.0.0",
+    "@microsoft/signalr": "^10.0.0",
     "@ngrx/signals": "^20.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"

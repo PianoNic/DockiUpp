@@ -1,16 +1,17 @@
-﻿using DockiUp.Application.Dtos;
+using DockiUp.Application.Dtos;
 using DockiUp.Application.Interfaces;
-using MediatR;
+using Mediator;
 
 namespace DockiUp.Application.Queries
 {
-    public class GetProjectsQuery : IRequest<ProjectDto[]>
+    public sealed class GetProjectsQuery : IRequest<ProjectDto[]>
     {
         public GetProjectsQuery()
         {
         }
     }
-    public class GetProjectsQueryHandler : IRequestHandler<GetProjectsQuery, ProjectDto[]>
+
+    public sealed class GetProjectsQueryHandler : IRequestHandler<GetProjectsQuery, ProjectDto[]>
     {
         private readonly IDockerService _dockerService;
 
@@ -19,7 +20,7 @@ namespace DockiUp.Application.Queries
             _dockerService = dockerService;
         }
 
-        public async Task<ProjectDto[]> Handle(GetProjectsQuery request, CancellationToken cancellationToken)
+        public async ValueTask<ProjectDto[]> Handle(GetProjectsQuery request, CancellationToken cancellationToken)
         {
             return await _dockerService.GetProjectsAsync();
         }

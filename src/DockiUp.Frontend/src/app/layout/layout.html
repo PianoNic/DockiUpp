@@ -1,0 +1,15 @@
+<div class="custom-layout">
+  <app-header (menuToggle)="layoutService.toggleSidenavCollapsed()" />
+
+  <div class="layout-body">
+    <aside class="custom-sidenav" [class.collapsed]="layoutService.sidenavCollapsed()">
+      <app-sidenav [collapsed]="layoutService.sidenavCollapsed()" />
+    </aside>
+
+    <div class="custom-main-content">
+      <div class="content-wrapper">
+        <router-outlet />
+      </div>
+    </div>
+  </div>
+</div>

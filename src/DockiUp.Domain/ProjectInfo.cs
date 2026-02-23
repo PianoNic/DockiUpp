@@ -1,4 +1,4 @@
-﻿using DockiUp.Domain.Enums;
+using DockiUp.Domain.Enums;
 
 namespace DockiUp.Domain
 {
@@ -16,5 +16,7 @@ namespace DockiUp.Domain
         public required ProjectUpdateMethod ProjectUpdateMethod { get; set; }
         public string? WebhookUrl { get; set; }
         public int? PeriodicIntervalInMinutes { get; set; }
+        /// <summary>Last time periodic update ran (Komodo-style polling).</summary>
+        public DateTime? LastPeriodicUpdateAt { get; set; }
     }
 }

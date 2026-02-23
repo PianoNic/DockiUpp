@@ -1,0 +1,30 @@
+<nav class="sidenav-content" [class.collapsed]="collapsed()">
+  @for (item of navigationItems(); track item.route) {
+    @if (!collapsed()) {
+      <button
+        mat-button
+        class="nav-button"
+        [routerLink]="item.route"
+        routerLinkActive="active"
+      >
+        <mat-icon>{{ item.icon }}</mat-icon>
+        <span>{{ item.label }}</span>
+      </button>
+    } @else {
+      <button
+        mat-icon-button
+        class="nav-button-icon"
+        [routerLink]="item.route"
+        routerLinkActive="active"
+      >
+        <mat-icon>{{ item.icon }}</mat-icon>
+      </button>
+    }
+  }
+  <div class="version-display">
+    <div class="version-number">v{{ version() }}</div>
+    <div class="attribution">
+      DockiUp
+    </div>
+  </div>
+</nav>

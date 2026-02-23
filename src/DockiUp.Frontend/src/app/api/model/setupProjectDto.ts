@@ -1,5 +1,5 @@
 /**
- * DockiUp.API
+ * DockiUp.API | v1
  *
  * 
  *
@@ -7,22 +7,18 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ProjectOriginType } from './projectOriginType';
-import { ProjectUpdateMethod } from './projectUpdateMethod';
+import { ProblemDetailsStatus } from './problemDetailsStatus';
 
 
 export interface SetupProjectDto { 
-    projectName: string | null;
+    projectName: string;
     description?: string | null;
-    projectOrigin: ProjectOriginType;
+    projectOrigin: number;
     gitUrl?: string | null;
     compose?: string | null;
     path?: string | null;
-    projectUpdateMethod: ProjectUpdateMethod;
+    projectUpdateMethod: number;
     webhookUrl?: string | null;
-    periodicIntervalInMinutes?: number | null;
+    periodicIntervalInMinutes?: ProblemDetailsStatus | null;
 }
-export namespace SetupProjectDto {
-}
-
 

@@ -1,0 +1,26 @@
+# API-only Dockerfile (no frontend). Use when frontend runs separately (e.g. PianUI at D:\PianUI).
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+WORKDIR /app
+EXPOSE 8080
+EXPOSE 8081
+
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
+COPY ["src/DockiUp.API/DockiUp.API.csproj", "src/DockiUp.API/"]
+COPY ["src/DockiUp.Application/DockiUp.Application.csproj", "src/DockiUp.Application/"]
+COPY ["src/DockiUp.Infrastructure/DockiUp.Infrastructure.csproj", "src/DockiUp.Infrastructure/"]
+COPY ["src/DockiUp.Domain/DockiUp.Domain.csproj", "src/DockiUp.Domain/"]
+RUN dotnet restore "src/DockiUp.API/DockiUp.API.csproj"
+COPY . .
+WORKDIR "/src/src/DockiUp.API"
+RUN dotnet build "DockiUp.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "DockiUp.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+FROM base AS final
+WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "DockiUp.API.dll"]

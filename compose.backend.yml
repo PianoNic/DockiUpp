@@ -1,0 +1,49 @@
+# DB + API only (no frontend in image). Run frontend locally (ng serve) and point to http://localhost:8080
+services:
+  postgres:
+    image: postgres:15
+    container_name: dockiup-postgres
+    env_file: .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-dockiupdb}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      retries: 5
+      start_period: 20s
+      timeout: 5s
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  dockiup-api:
+    build:
+      context: .
+      dockerfile: src/DockiUp.API/Dockerfile.backend
+    container_name: dockiup-api
+    env_file: .env
+    environment:
+      ASPNETCORE_URLS: "http://+:8080"
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DockiUpDatabase: "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+      SystemPaths__DockerSocket: ${DOCKER_SOCKET_PATH}
+      SystemPaths__ProjectsPath: ${PROJECTS_PATH}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:4200}
+    ports:
+      - "8080:8080"
+    volumes:
+      - dockiup-projects:${PROJECTS_PATH:-/app/projects}
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  dockiup-projects:

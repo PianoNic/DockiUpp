@@ -1,5 +1,5 @@
 /**
- * DockiUp.API
+ * DockiUp.API | v1
  *
  * 
  *
@@ -10,7 +10,7 @@
 
 
 export interface AppInfoDto { 
-    version?: string | null;
-    environment?: string | null;
+    version: string;
+    environment: string;
 }
 

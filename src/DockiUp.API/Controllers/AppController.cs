@@ -1,6 +1,6 @@
-﻿using DockiUp.Application.Dtos;
+using DockiUp.Application.Dtos;
 using DockiUp.Application.Queries;
-using MediatR;
+using Mediator;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DockiUp.API.Controllers

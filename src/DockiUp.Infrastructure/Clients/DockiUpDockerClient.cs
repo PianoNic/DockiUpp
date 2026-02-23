@@ -1,17 +1,25 @@
-﻿using Docker.DotNet;
+using Docker.DotNet;
 using DockiUp.Application.Interfaces;
+using DockiUp.Application.Models;
+using Microsoft.Extensions.Options;
 
 namespace DockiUp.Infrastructure.Clients
 {
+    /// <summary>
+    /// Docker client configured from SystemPaths (Komodo-style: optional socket path for single host).
+    /// </summary>
     public class DockiUpDockerClient : IDockiUpDockerClient
     {
         public DockerClient DockerClient { get; }
 
         DockerClient IDockiUpDockerClient.DockerClient => DockerClient;
 
-        public DockiUpDockerClient()
+        public DockiUpDockerClient(IOptions<SystemPaths> systemPaths)
         {
-            var config = new DockerClientConfiguration();
+            var path = systemPaths.Value.DockerSocket;
+            var config = !string.IsNullOrWhiteSpace(path)
+                ? new DockerClientConfiguration(new Uri(path))
+                : new DockerClientConfiguration();
             DockerClient = config.CreateClient();
         }
     }

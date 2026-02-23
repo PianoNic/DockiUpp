@@ -33,8 +33,9 @@ export class CreateProjectButton {
     const dialogRef = this.dialog.open(CreateProjectModal, { minWidth: '750px' });
 
     dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(async (result: SetupProjectDto | undefined) => {
-      console.log(result);
-      await this.projectStore.deployProject(result!);
+      if (result) {
+        await this.projectStore.deployProject(result);
+      }
     });
   }
 }

@@ -4,4 +4,6 @@ export * from './container.service';
 import { ContainerService } from './container.service';
 export * from './project.service';
 import { ProjectService } from './project.service';
-export const APIS = [AppService, ContainerService, ProjectService];
+export * from './webhook.service';
+import { WebhookService } from './webhook.service';
+export const APIS = [AppService, ContainerService, ProjectService, WebhookService];

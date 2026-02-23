@@ -1,5 +1,5 @@
 /**
- * DockiUp.API
+ * DockiUp.API | v1
  *
  * 
  *
@@ -7,11 +7,8 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ContainerDto } from './containerDto';
 
 
-export interface ComposeProjectDto { 
-    name: string | null;
-    containers: Array<ContainerDto> | null;
+export interface GetContainerLogsTailParameter { 
 }
 
