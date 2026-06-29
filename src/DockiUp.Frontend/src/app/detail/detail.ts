@@ -79,7 +79,7 @@ export class Detail implements OnInit {
 
   async onUpdateProject() {
     const p = this.project();
-    const id = (p as ProjectDto & { id?: number })?.id;
+    const id = (p as ProjectDto & { id?: string })?.id;
     if (id != null) await this.projectStore.updateProject(id);
   }
 
@@ -143,7 +143,7 @@ export class Detail implements OnInit {
 
   canUpdateProject(): boolean {
     const p = this.project();
-    return !!(p?.managedByDockiUp && (p as ProjectDto & { id?: number }).id != null);
+    return !!(p?.managedByDockiUp && (p as ProjectDto & { id?: string }).id != null);
   }
 
   async loadConsoleLogs(): Promise<void> {

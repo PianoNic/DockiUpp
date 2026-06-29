@@ -20,10 +20,10 @@ model/models.ts
 model/nodeDraftDto.ts
 model/nodeDto.ts
 model/nodePingResultDto.ts
+model/nodePingResultDtoRoundTripMs.ts
 model/problemDetails.ts
 model/problemDetailsStatus.ts
 model/projectDto.ts
 model/setupProjectDto.ts
-model/stopProjectProjectIdParameter.ts
 param.ts
 variables.ts

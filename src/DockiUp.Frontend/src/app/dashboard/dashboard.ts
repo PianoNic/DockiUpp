@@ -41,12 +41,12 @@ export class Dashboard implements OnInit {
   }
 
   async onUpdateProject(project: ProjectDto) {
-    const id = (project as ProjectDto & { id?: number })?.id;
+    const id = (project as ProjectDto & { id?: string })?.id;
     if (id != null) await this.projectStore.updateProject(id);
   }
 
   canUpdateProject(project: ProjectDto): boolean {
-    return project.managedByDockiUp && (project as ProjectDto & { id?: number }).id != null;
+    return project.managedByDockiUp && (project as ProjectDto & { id?: string }).id != null;
   }
 
   getRunningCount(project: ProjectDto): number {

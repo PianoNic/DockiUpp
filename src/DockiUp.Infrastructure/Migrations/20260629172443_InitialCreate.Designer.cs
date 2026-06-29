@@ -12,26 +12,65 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DockiUp.Infrastructure.Migrations
 {
     [DbContext(typeof(DockiUpDbContext))]
-    [Migration("20250821053348_Init")]
-    partial class Init
+    [Migration("20260629172443_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.8")
+                .HasAnnotation("ProductVersion", "10.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("DockiUp.Domain.Node", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DockerVersion")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("LastSeenAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("MachineName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Os")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TokenHash")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TokenHash");
+
+                    b.ToTable("Nodes");
+                });
+
             modelBuilder.Entity("DockiUp.Domain.ProjectInfo", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ComposePath")
                         .IsRequired()
@@ -49,6 +88,9 @@ namespace DockiUp.Infrastructure.Migrations
 
                     b.Property<string>("GitUrl")
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("LastPeriodicUpdateAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int?>("PeriodicIntervalInMinutes")
                         .HasColumnType("integer");

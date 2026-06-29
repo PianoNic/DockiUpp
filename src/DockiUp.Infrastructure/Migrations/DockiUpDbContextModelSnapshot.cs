@@ -53,6 +53,9 @@ namespace DockiUp.Infrastructure.Migrations
                     b.Property<string>("TokenHash")
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TokenHash");
@@ -62,11 +65,9 @@ namespace DockiUp.Infrastructure.Migrations
 
             modelBuilder.Entity("DockiUp.Domain.ProjectInfo", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ComposePath")
                         .IsRequired()

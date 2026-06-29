@@ -2,7 +2,7 @@ using DockiUp.Domain.Enums;
 
 namespace DockiUp.Domain
 {
-    public class ProjectInfo : EntityBase
+    public class ProjectInfo : BaseEntity
     {
         public required string ProjectName { get; set; }
         public required string DockerProjectName { get; set; }

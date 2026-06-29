@@ -6,10 +6,8 @@ namespace DockiUp.Domain
     /// created up front from the "Add node" UI and stay pending (empty runtime fields) until the node
     /// actually dials in and registers. Online state is NOT stored; it's derived from the live SignalR
     /// registry. CreatedAt is the first-seen time.</summary>
-    public class Node
+    public class Node : BaseEntity
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
-
         public required string Name { get; set; }
 
         /// <summary>SHA-256 (base64) of the node's pre-shared token.</summary>
@@ -20,7 +18,6 @@ namespace DockiUp.Domain
         public string Os { get; set; } = "";
         public string DockerVersion { get; set; } = "";
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime LastSeenAt { get; set; } = DateTime.UtcNow;
     }
 }

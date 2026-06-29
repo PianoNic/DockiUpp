@@ -7,12 +7,12 @@ namespace DockiUp.Application.Commands
     /// <summary>Update a project: pull git (if origin is Git) and restart compose (Komodo-style pull + redeploy).</summary>
     public sealed class UpdateProjectCommand : IRequest
     {
-        public UpdateProjectCommand(int projectId)
+        public UpdateProjectCommand(Guid projectId)
         {
             ProjectId = projectId;
         }
 
-        public int ProjectId { get; }
+        public Guid ProjectId { get; }
     }
 
     public sealed class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand>

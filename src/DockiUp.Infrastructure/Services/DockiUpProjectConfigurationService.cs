@@ -18,7 +18,7 @@ namespace DockiUp.Infrastructure.Services
             await Task.Run(() => Repository.Clone(gitUrl, projectPath));
         }
 
-        public async Task UpdateRepositoy(int projectId)
+        public async Task UpdateRepositoy(Guid projectId)
         {
             var projectInfo = await _dbContext.ProjectInfo.FindAsync(projectId);
 

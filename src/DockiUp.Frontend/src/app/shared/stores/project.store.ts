@@ -69,7 +69,7 @@ export const ProjectStore = signalStore(
       }
     };
 
-    const updateProject = async (projectId: number) => {
+    const updateProject = async (projectId: string) => {
       patchState(store, { loading: true });
       try {
         await firstValueFrom(projectService.updateProject(projectId));
