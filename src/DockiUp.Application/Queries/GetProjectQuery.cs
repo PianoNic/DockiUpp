@@ -7,13 +7,13 @@ namespace DockiUp.Application.Queries
     /// <summary>Get a single project by id or docker project name (Komodo-style).</summary>
     public sealed class GetProjectQuery : IRequest<ProjectDto?>
     {
-        public GetProjectQuery(int? projectId, string? dockerProjectName = null)
+        public GetProjectQuery(Guid? projectId, string? dockerProjectName = null)
         {
             ProjectId = projectId;
             DockerProjectName = dockerProjectName;
         }
 
-        public int? ProjectId { get; }
+        public Guid? ProjectId { get; }
         public string? DockerProjectName { get; }
     }
 

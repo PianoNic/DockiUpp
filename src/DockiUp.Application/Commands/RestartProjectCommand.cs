@@ -7,13 +7,13 @@ namespace DockiUp.Application.Commands
     /// <summary>Restart a project/stack by id or docker project name (Komodo-style).</summary>
     public sealed class RestartProjectCommand : IRequest
     {
-        public RestartProjectCommand(int? projectId, string? dockerProjectName = null)
+        public RestartProjectCommand(Guid? projectId, string? dockerProjectName = null)
         {
             ProjectId = projectId;
             DockerProjectName = dockerProjectName;
         }
 
-        public int? ProjectId { get; }
+        public Guid? ProjectId { get; }
         public string? DockerProjectName { get; }
     }
 

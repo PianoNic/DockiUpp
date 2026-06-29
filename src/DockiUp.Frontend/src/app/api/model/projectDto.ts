@@ -7,12 +7,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ProblemDetailsStatus } from './problemDetailsStatus';
 import { ContainerDto } from './containerDto';
 
 
 export interface ProjectDto { 
-    id?: ProblemDetailsStatus | null;
+    id?: string | null;
     projectName: string;
     dockerProjectName: string;
     projectDescription: string;

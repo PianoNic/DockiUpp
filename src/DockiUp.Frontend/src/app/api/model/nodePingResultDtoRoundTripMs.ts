@@ -7,11 +7,8 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { NodePingResultDtoRoundTripMs } from './nodePingResultDtoRoundTripMs';
 
 
-export interface NodePingResultDto { 
-    reply: string;
-    roundTripMs: NodePingResultDtoRoundTripMs;
+export interface NodePingResultDtoRoundTripMs { 
 }
 

@@ -38,7 +38,7 @@ namespace DockiUp.API.Controllers
         [HttpGet("StopProject", Name = "StopProject")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> StopProject([FromQuery] int? projectId, [FromQuery] string? dockerProjectName)
+        public async Task<ActionResult> StopProject([FromQuery] Guid? projectId, [FromQuery] string? dockerProjectName)
         {
             await _mediator.Send(new StopProjectCommand(projectId, dockerProjectName), HttpContext.RequestAborted);
             return NoContent();
@@ -47,7 +47,7 @@ namespace DockiUp.API.Controllers
         [HttpPost("RestartProject", Name = "RestartProject")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> RestartProject([FromQuery] int? projectId, [FromQuery] string? dockerProjectName)
+        public async Task<ActionResult> RestartProject([FromQuery] Guid? projectId, [FromQuery] string? dockerProjectName)
         {
             await _mediator.Send(new RestartProjectCommand(projectId, dockerProjectName), HttpContext.RequestAborted);
             return NoContent();
@@ -56,7 +56,7 @@ namespace DockiUp.API.Controllers
         [HttpGet("GetProject", Name = "GetProject")]
         [ProducesResponseType(typeof(ProjectDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ProjectDto>> GetProject([FromQuery] int? projectId, [FromQuery] string? dockerProjectName)
+        public async Task<ActionResult<ProjectDto>> GetProject([FromQuery] Guid? projectId, [FromQuery] string? dockerProjectName)
         {
             var project = await _mediator.Send(new GetProjectQuery(projectId, dockerProjectName), HttpContext.RequestAborted);
             if (project == null)
@@ -68,7 +68,7 @@ namespace DockiUp.API.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> UpdateProject([FromQuery] int projectId)
+        public async Task<ActionResult> UpdateProject([FromQuery] Guid projectId)
         {
             await _mediator.Send(new UpdateProjectCommand(projectId), HttpContext.RequestAborted);
             return NoContent();

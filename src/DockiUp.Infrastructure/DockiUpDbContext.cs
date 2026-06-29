@@ -30,15 +30,11 @@ namespace DockiUp.Infrastructure
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            var entries = ChangeTracker.Entries<EntityBase>();
+            var entries = ChangeTracker.Entries<BaseEntity>();
             foreach (var entry in entries)
             {
-                if (entry.State == EntityState.Added)
-                {
-                    entry.Entity.CreatedAt = DateTime.UtcNow;
-                    entry.Entity.UpdatedAt = DateTime.UtcNow;
-                }
-                else if (entry.State == EntityState.Modified)
+                // CreatedAt/Id are init-set at construction (BaseEntity defaults); only UpdatedAt is bumped here.
+                if (entry.State is EntityState.Added or EntityState.Modified)
                 {
                     entry.Entity.UpdatedAt = DateTime.UtcNow;
                 }

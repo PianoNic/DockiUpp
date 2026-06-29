@@ -6,7 +6,7 @@ namespace DockiUp.Application.Dtos
     public class ProjectDto
     {
         /// <summary>Database id when managed by DockiUp.</summary>
-        public int? Id { get; set; }
+        public Guid? Id { get; set; }
         public required string ProjectName { get; set; }
         public required string DockerProjectName { get; set; }
         public required string ProjectDescription { get; set; }

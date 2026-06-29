@@ -25,7 +25,7 @@ namespace DockiUp.API.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> Trigger([FromQuery] int projectId, [FromHeader(Name = "X-Webhook-Secret")] string? secretHeader, [FromQuery] string? secret)
+        public async Task<ActionResult> Trigger([FromQuery] Guid projectId, [FromHeader(Name = "X-Webhook-Secret")] string? secretHeader, [FromQuery] string? secret)
         {
             var configured = _webhookOptions.Value.WebhookSecret;
             if (!string.IsNullOrEmpty(configured))

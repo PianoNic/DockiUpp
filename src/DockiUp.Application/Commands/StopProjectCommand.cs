@@ -7,13 +7,13 @@ namespace DockiUp.Application.Commands
     /// <summary>Stop a project/stack by id (DockiUp-managed) or by docker project name.</summary>
     public sealed class StopProjectCommand : IRequest
     {
-        public StopProjectCommand(int? projectId, string? dockerProjectName = null)
+        public StopProjectCommand(Guid? projectId, string? dockerProjectName = null)
         {
             ProjectId = projectId;
             DockerProjectName = dockerProjectName;
         }
 
-        public int? ProjectId { get; }
+        public Guid? ProjectId { get; }
         public string? DockerProjectName { get; }
     }
 

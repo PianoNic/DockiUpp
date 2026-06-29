@@ -4,6 +4,6 @@
     {
         Task<string> WriteComposeFileAsync(string projectPath, string composeContent);
         Task CloneRepositoryAsync(string projectPath, string gitUrl);
-        Task UpdateRepositoy(int projectId);
+        Task UpdateRepositoy(Guid projectId);
     }
 }
