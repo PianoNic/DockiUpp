@@ -54,6 +54,10 @@
                     <mat-icon>refresh</mat-icon>
                     <span>Restart</span>
                   </button>
+                  <button mat-menu-item [routerLink]="['/terminal', container.id]" [disabled]="getContainerState(container) !== UpdateMethodType.Running">
+                    <mat-icon>terminal</mat-icon>
+                    <span>Terminal</span>
+                  </button>
                 </mat-menu>
               </div>
             </mat-card-content>
