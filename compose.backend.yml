@@ -33,6 +33,7 @@ services:
       SystemPaths__DockerSocket: ${DOCKER_SOCKET_PATH}
       SystemPaths__ProjectsPath: ${PROJECTS_PATH}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      Vault__MasterKey: ${VAULT_MASTER_KEY}
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:4200}
     ports:
       - "8080:8080"

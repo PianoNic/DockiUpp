@@ -9,6 +9,7 @@ api/container.service.ts
 api/dashboard.service.ts
 api/nodes.service.ts
 api/project.service.ts
+api/secrets.service.ts
 api/webhook.service.ts
 configuration.ts
 encoder.ts
@@ -21,6 +22,7 @@ model/containerDto.ts
 model/createNodeRequest.ts
 model/dashboardStatsDto.ts
 model/dashboardStatsDtoTotalProjects.ts
+model/generatedSecretDto.ts
 model/models.ts
 model/nodeDraftDto.ts
 model/nodeDto.ts
@@ -28,6 +30,8 @@ model/nodePingResultDto.ts
 model/problemDetails.ts
 model/problemDetailsStatus.ts
 model/projectDto.ts
+model/secretDto.ts
 model/setupProjectDto.ts
+model/storeSecretRequest.ts
 param.ts
 variables.ts
