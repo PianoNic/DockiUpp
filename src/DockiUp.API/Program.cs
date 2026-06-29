@@ -39,6 +39,7 @@ builder.Services.AddScoped<IDockerService, DockerService>();
 builder.Services.AddScoped<IActivityLogger, ActivityLogger>();
 builder.Services.AddScoped<ISecretsVaultService, SecretsVaultService>();
 builder.Services.AddSingleton<ISecretGeneratorService, SecretGeneratorService>();
+builder.Services.AddSingleton<IContainerExecRegistry, ContainerExecRegistry>();
 builder.Services.AddScoped<IDockiUpProjectConfigurationService, DockiUpProjectConfigurationService>();
 builder.Services.AddSingleton<IDockiUpDockerClient, DockiUpDockerClient>();
 
