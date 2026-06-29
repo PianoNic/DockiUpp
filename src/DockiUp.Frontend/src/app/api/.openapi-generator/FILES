@@ -5,6 +5,7 @@ api.module.ts
 api/api.ts
 api/app.service.ts
 api/container.service.ts
+api/nodes.service.ts
 api/project.service.ts
 api/webhook.service.ts
 configuration.ts
@@ -13,8 +14,12 @@ git_push.sh
 index.ts
 model/appInfoDto.ts
 model/containerDto.ts
+model/createNodeRequest.ts
 model/getContainerLogsTailParameter.ts
 model/models.ts
+model/nodeDraftDto.ts
+model/nodeDto.ts
+model/nodePingResultDto.ts
 model/problemDetails.ts
 model/problemDetailsStatus.ts
 model/projectDto.ts

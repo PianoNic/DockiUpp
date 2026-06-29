@@ -47,6 +47,7 @@
     "@angular/cli": "^21.0.4",
     "@angular/compiler-cli": "^21.0.6",
     "@openapitools/openapi-generator-cli": "^2.22.0",
+    "@playwright/test": "^1.61.1",
     "@types/jasmine": "~5.1.0",
     "jasmine-core": "~5.8.0",
     "karma": "~6.4.0",
