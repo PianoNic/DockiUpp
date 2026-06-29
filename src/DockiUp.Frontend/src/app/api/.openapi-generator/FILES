@@ -6,6 +6,7 @@ api/activity.service.ts
 api/api.ts
 api/app.service.ts
 api/container.service.ts
+api/dashboard.service.ts
 api/nodes.service.ts
 api/project.service.ts
 api/webhook.service.ts
@@ -18,11 +19,12 @@ model/apiActivityGetLimitParameter.ts
 model/appInfoDto.ts
 model/containerDto.ts
 model/createNodeRequest.ts
+model/dashboardStatsDto.ts
+model/dashboardStatsDtoTotalProjects.ts
 model/models.ts
 model/nodeDraftDto.ts
 model/nodeDto.ts
 model/nodePingResultDto.ts
-model/nodePingResultDtoRoundTripMs.ts
 model/problemDetails.ts
 model/problemDetailsStatus.ts
 model/projectDto.ts

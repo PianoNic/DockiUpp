@@ -7,11 +7,8 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { DashboardStatsDtoTotalProjects } from './dashboardStatsDtoTotalProjects';
 
 
-export interface NodePingResultDto { 
-    reply: string;
-    roundTripMs: DashboardStatsDtoTotalProjects;
+export interface DashboardStatsDtoTotalProjects { 
 }
 
