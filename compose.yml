@@ -34,7 +34,8 @@ services:
       - "8080:8080"
     volumes:
       - dockiup-projects:${PROJECTS_PATH:-/app/projects}
-      - /var/run/docker.sock:/var/run/docker.sock
+      # Leading // guards against Git-Bash path mangling on Windows; harmless on Linux.
+      - //var/run/docker.sock:/var/run/docker.sock
     depends_on:
       postgres:
         condition: service_healthy
