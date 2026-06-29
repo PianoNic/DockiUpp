@@ -36,6 +36,7 @@ builder.Services.AddSignalR();
 builder.Services.AddSingleton<IDockiUpHubBroadcastService, DockiUpHubBroadcastService>();
 
 builder.Services.AddScoped<IDockerService, DockerService>();
+builder.Services.AddScoped<IActivityLogger, ActivityLogger>();
 builder.Services.AddScoped<IDockiUpProjectConfigurationService, DockiUpProjectConfigurationService>();
 builder.Services.AddSingleton<IDockiUpDockerClient, DockiUpDockerClient>();
 

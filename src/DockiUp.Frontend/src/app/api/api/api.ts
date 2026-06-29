@@ -1,3 +1,5 @@
+export * from './activity.service';
+import { ActivityService } from './activity.service';
 export * from './app.service';
 import { AppService } from './app.service';
 export * from './container.service';
@@ -8,4 +10,4 @@ export * from './project.service';
 import { ProjectService } from './project.service';
 export * from './webhook.service';
 import { WebhookService } from './webhook.service';
-export const APIS = [AppService, ContainerService, NodesService, ProjectService, WebhookService];
+export const APIS = [ActivityService, AppService, ContainerService, NodesService, ProjectService, WebhookService];

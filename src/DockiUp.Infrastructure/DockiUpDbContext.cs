@@ -9,6 +9,7 @@ namespace DockiUp.Infrastructure
     {
         public DbSet<ProjectInfo> ProjectInfo { get; set; }
         public DbSet<Node> Nodes { get; set; }
+        public DbSet<ActivityEntry> ActivityEntries { get; set; }
 
         public DockiUpDbContext(DbContextOptions<DockiUpDbContext> options) : base(options) { }
 
