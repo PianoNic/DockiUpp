@@ -66,11 +66,13 @@
   background-color: var(--mat-sys-outline-variant);
 }
 
-.user-dropdown app-theme-toggle {
-  display: flex;
-  width: 100%;
-
-  .theme-toggle {
+.user-dropdown {
+  app-theme-toggle {
+    display: flex;
     width: 100%;
+
+    .theme-toggle {
+      width: 100%;
+    }
   }
 }

@@ -6,7 +6,7 @@
 
 html {
   @include mat.theme((
-    color: mat.$azure-palette,
+    color: mat.$orange-palette,
     typography: Roboto,
     density: 0
   ));

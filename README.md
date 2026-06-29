@@ -64,7 +64,7 @@ DockiUp runs as a service that:
 
 ### Frontend (DockiUp.Frontend)
 
-The web UI lives **inside this repo** at `src/DockiUp.Frontend` (Angular, Material, layout with theme toggle). For local development, run the API and the frontend separately; the API allows CORS from `http://localhost:4200`.
+The web UI lives **inside this repo** at `src/DockiUp.Frontend` (Angular 21, Material 3, PianUI layout with theme toggle). For local development, run the API and the frontend separately; the API allows CORS from `http://localhost:4200`.
 
 **Run frontend:** From `src/DockiUp.Frontend`: `npm install` then `npm start`. Generate the API client with `npm run apigen` (uses running API at `http://localhost:5098/openapi/v1.json`) or `npm run apigen:live` (same; requires the API running).
 
@@ -107,6 +107,8 @@ Migrations run automatically on API startup. The API container mounts the Docker
 
 This project is licensed under the GPL-3.0 License.  
 See the [LICENSE](LICENSE) file for details.
+
+This project is based on [PianUI](https://github.com/PianoNic/PianUI) by [PianoNic](https://github.com/PianoNic).
 
 ---
 <p align="center">Made with ❤️ by <a href="https://github.com/Pianonic">PianoNic</a></p>
