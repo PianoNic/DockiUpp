@@ -35,8 +35,23 @@ COPY --from=frontend-build /artifacts/frontend /app/publish/wwwroot
 # Final production stage
 FROM base AS final
 WORKDIR /app
+
+# Run as root so the mounted /var/run/docker.sock is accessible out of the box on every
+# host (Docker Desktop exposes it root:root 0660; Linux exposes it root:docker 0660 with a
+# host-specific GID). DockiUp needs full Docker access to manage compose projects; dropping
+# privilege while holding the socket gains nothing, since socket access is root-equivalent
+# on the host either way. Override with `user: "<uid>:<gid>"` in compose if you have a
+# different threat model and a known GID to map.
+USER root
+
+# git: clone project repos. docker CLI + compose plugin: DockerService shells out to
+# `docker compose` for project start/stop/restart against the mounted socket.
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y git
+    apt-get install -y --no-install-recommends git && \
+    rm -rf /var/lib/apt/lists/*
+COPY --from=docker:27-cli /usr/local/bin/docker /usr/local/bin/docker
+COPY --from=docker:27-cli /usr/local/libexec/docker/cli-plugins/docker-compose /usr/local/libexec/docker/cli-plugins/docker-compose
+
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "DockiUp.API.dll"]
