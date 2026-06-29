@@ -7,6 +7,7 @@ namespace DockiUp.Application.Interfaces
     {
         public DbSet<ProjectInfo> ProjectInfo { get; set; }
         public DbSet<Node> Nodes { get; set; }
+        public DbSet<ActivityEntry> ActivityEntries { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }

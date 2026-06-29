@@ -24,13 +24,15 @@ namespace DockiUp.Application.Commands
         private readonly IDockiUpDbContext _dbContext;
         private readonly SystemPaths _systemPaths;
         private readonly IDockiUpProjectConfigurationService _projectConfigurationService;
+        private readonly IActivityLogger _activityLogger;
 
-        public DeployProjectCommandHandler(IDockerService dockerService, IOptions<SystemPaths> systemPaths, IDockiUpProjectConfigurationService projectConfigurationService, IDockiUpDbContext dbContext)
+        public DeployProjectCommandHandler(IDockerService dockerService, IOptions<SystemPaths> systemPaths, IDockiUpProjectConfigurationService projectConfigurationService, IDockiUpDbContext dbContext, IActivityLogger activityLogger)
         {
             _dockerService = dockerService;
             _systemPaths = systemPaths.Value;
             _projectConfigurationService = projectConfigurationService;
             _dbContext = dbContext;
+            _activityLogger = activityLogger;
         }
 
         public async ValueTask<Unit> Handle(DeployProjectCommand request, CancellationToken cancellationToken)
@@ -50,6 +52,9 @@ namespace DockiUp.Application.Commands
             {
 
             }
+
+            await _activityLogger.LogAsync("deploy", request.SetupContainerDto.ProjectName,
+                details: request.SetupContainerDto.ProjectOrigin.ToString(), cancellationToken: cancellationToken);
 
             return default;
         }
