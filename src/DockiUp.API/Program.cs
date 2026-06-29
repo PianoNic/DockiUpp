@@ -1,3 +1,4 @@
+using DockiUp.API.Nodes;
 using DockiUp.API.SignalR;
 using DockiUp.Application;
 using DockiUp.Application.Interfaces;
@@ -37,6 +38,16 @@ builder.Services.AddSingleton<IDockiUpHubBroadcastService, DockiUpHubBroadcastSe
 builder.Services.AddScoped<IDockerService, DockerService>();
 builder.Services.AddScoped<IDockiUpProjectConfigurationService, DockiUpProjectConfigurationService>();
 builder.Services.AddSingleton<IDockiUpDockerClient, DockiUpDockerClient>();
+
+#region Multi-server nodes
+// Live-connection registry is shared by the hub (control plane) and the controller.
+builder.Services.AddSingleton<INodeRegistry, NodeRegistry>();
+
+// When Node:ControlPlaneUrl is set this process boots in the "node" role and dials out to the
+// control plane; otherwise it IS the control plane and just hosts the hub + Nodes API.
+if (!string.IsNullOrWhiteSpace(builder.Configuration["Node:ControlPlaneUrl"]))
+    builder.Services.AddHostedService<NodeAgentHostedService>();
+#endregion
 #endregion
 
 #region Database Configuration
@@ -143,6 +154,7 @@ app.UseAuthorization();
 app.UseCors();
 app.MapControllers();
 app.MapHub<DockiUpHub>("/hubs/dockiup");
+app.MapHub<NodeHub>("/hubs/node");
 
 app.MapFallbackToFile("index.html");
 #endregion

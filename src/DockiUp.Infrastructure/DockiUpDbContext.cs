@@ -8,6 +8,7 @@ namespace DockiUp.Infrastructure
     public class DockiUpDbContext : DbContext, IDockiUpDbContext
     {
         public DbSet<ProjectInfo> ProjectInfo { get; set; }
+        public DbSet<Node> Nodes { get; set; }
 
         public DockiUpDbContext(DbContextOptions<DockiUpDbContext> options) : base(options) { }
 
@@ -18,6 +19,12 @@ namespace DockiUp.Infrastructure
             modelBuilder.Entity<ProjectInfo>(e =>
             {
                 e.Property(p => p.LastPeriodicUpdateAt);
+            });
+
+            modelBuilder.Entity<Node>(e =>
+            {
+                e.HasKey(n => n.Id);
+                e.HasIndex(n => n.TokenHash);
             });
         }
 
