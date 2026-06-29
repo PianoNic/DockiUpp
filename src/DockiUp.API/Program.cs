@@ -44,9 +44,20 @@ builder.Services.AddSingleton<IDockiUpDockerClient, DockiUpDockerClient>();
 builder.Services.AddSingleton<INodeRegistry, NodeRegistry>();
 
 // When Node:ControlPlaneUrl is set this process boots in the "node" role and dials out to the
-// control plane; otherwise it IS the control plane and just hosts the hub + Nodes API.
+// control plane; otherwise it IS the control plane and hosts the hub + Nodes API.
 if (!string.IsNullOrWhiteSpace(builder.Configuration["Node:ControlPlaneUrl"]))
+{
+    // A node always uses its own daemon, so it resolves Docker locally and never re-routes.
+    builder.Services.AddScoped<IDockerServiceResolver, LocalDockerServiceResolver>();
+    builder.Services.AddSingleton<INodeRpc, OfflineNodeRpc>();
     builder.Services.AddHostedService<NodeAgentHostedService>();
+}
+else
+{
+    // Control plane: route Docker work to the local daemon or a node over SignalR, by the project's NodeId.
+    builder.Services.AddScoped<IDockerServiceResolver, DockerServiceResolver>();
+    builder.Services.AddSingleton<INodeRpc, NodeRpc>();
+}
 #endregion
 #endregion
 

@@ -10,6 +10,10 @@ namespace DockiUp.Domain
 
         public required ProjectOriginType ProjectOrigin { get; set; }
         public string? GitUrl { get; set; }
+
+        /// <summary>The node this project runs on, or null for the local control-plane host.
+        /// Operations on the project are routed to this node over SignalR.</summary>
+        public Guid? NodeId { get; set; }
         public required string ProjectPath { get; set; }
         public required string ComposePath { get; set; }
 
