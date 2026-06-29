@@ -46,3 +46,7 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Playwright artifacts
+test-results/
+dockiup-*.png

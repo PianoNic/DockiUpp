@@ -1,5 +1,5 @@
 import { Component, computed, inject, OnInit, signal, ViewChild, ElementRef, afterNextRender, effect } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ProjectStore } from '../shared/stores/project.store';
 import { MatCardModule } from '@angular/material/card';
@@ -28,6 +28,7 @@ import { NotificationService } from '../shared/services/notification.service';
     MatMenuModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    RouterLink,
   ],
   templateUrl: './detail.html',
   styleUrl: './detail.scss',

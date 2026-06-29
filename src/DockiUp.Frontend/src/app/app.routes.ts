@@ -4,6 +4,7 @@ import { Dashboard } from './dashboard/dashboard';
 import { Containers } from './containers/containers';
 import { Detail } from './detail/detail';
 import { User } from './user/user';
+import { ContainerTerminal } from './container-terminal/container-terminal';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
@@ -14,6 +15,7 @@ export const routes: Routes = [
       { path: 'dashboard', component: Dashboard },
       { path: 'containers', component: Containers },
       { path: 'project/:id', component: Detail },
+      { path: 'terminal/:containerId', component: ContainerTerminal },
       { path: 'me', component: User },
     ],
   },
