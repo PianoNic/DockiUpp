@@ -1,3 +1,4 @@
+using DockiUp.API.SignalR;
 using DockiUp.Domain;
 using DockiUp.Infrastructure;
 using DockiUp.Infrastructure.Services;
@@ -16,6 +17,8 @@ namespace DockiUp.API.Nodes
         INodeRegistry registry,
         IConfiguration configuration,
         IServiceScopeFactory scopeFactory,
+        IHubContext<DockiUpHub> containerHub,
+        IExecRelay execRelay,
         ILogger<NodeHub> logger) : Hub
     {
         // Key under which a token-resolved node Id is stashed on the connection, so Register can use
@@ -112,6 +115,23 @@ namespace DockiUp.API.Nodes
         public Task Heartbeat()
         {
             registry.Touch(Context.ConnectionId);
+            return Task.CompletedTask;
+        }
+
+        /// <summary>Console output from a node-run exec session - forward to the browser that opened it.</summary>
+        public Task ExecOutput(string sessionId, string base64Data)
+        {
+            if (execRelay.TryGetExec(sessionId, out _, out var browserConnectionId))
+                return containerHub.Clients.Client(browserConnectionId).SendAsync("ExecOutput", sessionId, base64Data);
+            return Task.CompletedTask;
+        }
+
+        /// <summary>A node-run exec session exited - forward the code to the browser and forget it.</summary>
+        public Task ExecExited(string sessionId, long? exitCode)
+        {
+            if (execRelay.TryGetExec(sessionId, out _, out var browserConnectionId))
+                _ = containerHub.Clients.Client(browserConnectionId).SendAsync("ExecExited", sessionId, exitCode);
+            execRelay.RemoveExec(sessionId);
             return Task.CompletedTask;
         }
 

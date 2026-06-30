@@ -43,6 +43,7 @@ if (!isNodeRole)
 
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<IDockiUpHubBroadcastService, DockiUpHubBroadcastService>();
+builder.Services.AddSingleton<DockiUp.API.SignalR.IExecRelay, DockiUp.API.SignalR.ExecRelay>();
 
 builder.Services.AddScoped<IDockerService, DockerService>();
 builder.Services.AddScoped<IActivityLogger, ActivityLogger>();
