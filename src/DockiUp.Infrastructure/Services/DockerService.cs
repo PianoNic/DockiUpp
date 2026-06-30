@@ -3,6 +3,8 @@ using Docker.DotNet.Models;
 using DockiUp.Application.Dtos;
 using DockiUp.Application.Interfaces;
 using DockiUp.Application.Mappers;
+using DockiUp.Application.Models;
+using Microsoft.Extensions.Options;
 using System.Diagnostics;
 
 namespace DockiUp.Infrastructure.Services
@@ -11,11 +13,13 @@ namespace DockiUp.Infrastructure.Services
     {
         private readonly IDockiUpDockerClient _dockiUpDockerClient;
         private readonly IDockiUpDbContext _dbContext;
+        private readonly SystemPaths _systemPaths;
         private const string ComposeFileName = "dockiup_compose.yml";
-        public DockerService(IDockiUpDockerClient dockiUpDockerClient, IDockiUpDbContext dbContext)
+        public DockerService(IDockiUpDockerClient dockiUpDockerClient, IDockiUpDbContext dbContext, IOptions<SystemPaths> systemPaths)
         {
             _dockiUpDockerClient = dockiUpDockerClient;
             _dbContext = dbContext;
+            _systemPaths = systemPaths.Value;
         }
 
         public async Task<ProjectDto[]> GetRawProjectsAsync()
@@ -111,14 +115,21 @@ namespace DockiUp.Infrastructure.Services
             };
         }
 
-        public async Task StartProjectAsync(string folderPath)
+        public Task StartProjectAsync(string folderPath)
+            => RunComposeAsync("up -d", folderPath, "Start successfully", throwOnFailure: true);
+
+        // Runs a `docker compose` subcommand in the project folder. The compose CLI - unlike Docker.DotNet -
+        // takes no socket from our config, so when SystemPaths.DockerSocket is set we point DOCKER_HOST at
+        // the same daemon. Otherwise compose would silently target the default socket while container
+        // operations (via Docker.DotNet) use the configured one - a split brain on non-default setups.
+        private async Task RunComposeAsync(string composeArgs, string folderPath, string successMessage, bool throwOnFailure)
         {
             using var process = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "docker",
-                    Arguments = $"compose -f {ComposeFileName} up -d",
+                    Arguments = $"compose -f {ComposeFileName} {composeArgs}",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
@@ -126,9 +137,12 @@ namespace DockiUp.Infrastructure.Services
                     WorkingDirectory = folderPath
                 }
             };
+            if (!string.IsNullOrWhiteSpace(_systemPaths.DockerSocket))
+                process.StartInfo.Environment["DOCKER_HOST"] = _systemPaths.DockerSocket;
 
             process.Start();
 
+            // Drain both pipes before waiting so a chatty compose can't deadlock on a full buffer.
             string output = await process.StandardOutput.ReadToEndAsync();
             string error = await process.StandardError.ReadToEndAsync();
 
@@ -136,11 +150,16 @@ namespace DockiUp.Infrastructure.Services
 
             if (process.ExitCode == 0)
             {
-                Console.WriteLine($"Start successfully");
+                Console.WriteLine(successMessage);
+            }
+            else if (throwOnFailure)
+            {
+                throw new ArgumentException("Docker Compose failed", error);
             }
             else
             {
-                throw new ArgumentException($"Docker Compose failed", error);
+                Console.WriteLine("Docker Compose failed");
+                Console.WriteLine(error);
             }
         }
 
@@ -159,73 +178,11 @@ namespace DockiUp.Infrastructure.Services
             await _dockiUpDockerClient.DockerClient.Containers.StopContainerAsync(containerId, new ContainerStopParameters());
         }
 
-        public async Task StopProjectAsync(string folderPath)
-        {
-            using var process = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = "docker",
-                    Arguments = $"compose -f {ComposeFileName} down",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                    WorkingDirectory = folderPath
-                }
-            };
+        public Task StopProjectAsync(string folderPath)
+            => RunComposeAsync("down", folderPath, "Stop successfully", throwOnFailure: false);
 
-            process.Start();
-
-            string output = await process.StandardOutput.ReadToEndAsync();
-            string error = await process.StandardError.ReadToEndAsync();
-
-            await process.WaitForExitAsync();
-
-            if (process.ExitCode == 0)
-            {
-                Console.WriteLine($"Stop successfully");
-            }
-            else
-            {
-                Console.WriteLine($"Docker Compose failed");
-                Console.WriteLine(error);
-            }
-        }
-
-        public async Task RestartProjectAsync(string folderPath)
-        {
-            using var process = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = "docker",
-                    Arguments = $"compose -f {ComposeFileName} restart",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                    WorkingDirectory = folderPath
-                }
-            };
-
-            process.Start();
-
-            string output = await process.StandardOutput.ReadToEndAsync();
-            string error = await process.StandardError.ReadToEndAsync();
-
-            await process.WaitForExitAsync();
-
-            if (process.ExitCode == 0)
-            {
-                Console.WriteLine($"Restart successfully");
-            }
-            else
-            {
-                Console.WriteLine($"Docker Compose failed");
-                Console.WriteLine(error);
-            }
-        }
+        public Task RestartProjectAsync(string folderPath)
+            => RunComposeAsync("restart", folderPath, "Restart successfully", throwOnFailure: false);
 
         public async Task<string> GetContainerLogsAsync(string containerId, int? tail = null, CancellationToken cancellationToken = default)
         {
