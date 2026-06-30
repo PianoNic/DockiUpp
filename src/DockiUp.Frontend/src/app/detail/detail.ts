@@ -84,9 +84,14 @@ export class Detail implements OnInit {
     if (id != null) await this.projectStore.updateProject(id);
   }
 
+  /** The node the current project runs on (undefined = local control-plane host). */
+  private get nodeId(): string | undefined {
+    return this.project()?.nodeId ?? undefined;
+  }
+
   async onStartContainer(container: ContainerDto) {
     try {
-      await firstValueFrom(this.containerService.startContainer(container.id));
+      await firstValueFrom(this.containerService.startContainer(container.id, this.nodeId));
       await this.projectStore.loadContainers();
     } catch (err) {
       this.notifications.showError('Failed to start container', err);
@@ -95,7 +100,7 @@ export class Detail implements OnInit {
 
   async onStopContainer(container: ContainerDto) {
     try {
-      await firstValueFrom(this.containerService.stopContainer(container.id));
+      await firstValueFrom(this.containerService.stopContainer(container.id, this.nodeId));
       await this.projectStore.loadContainers();
     } catch (err) {
       this.notifications.showError('Failed to stop container', err);
@@ -104,7 +109,7 @@ export class Detail implements OnInit {
 
   async onRestartContainer(container: ContainerDto) {
     try {
-      await firstValueFrom(this.containerService.restartContainer(container.id));
+      await firstValueFrom(this.containerService.restartContainer(container.id, this.nodeId));
       await this.projectStore.loadContainers();
     } catch (err) {
       this.notifications.showError('Failed to restart container', err);
@@ -157,6 +162,7 @@ export class Detail implements OnInit {
       const basePath = this.configuration.basePath ?? '';
       const url = `${basePath}/api/Container/GetContainerLogs`;
       const tail = 200;
+      const nodeId = this.nodeId;
 
       if (!containerId && containers.length === 0) {
         this.consoleLogs.set('No containers in this project.');
@@ -169,7 +175,10 @@ export class Detail implements OnInit {
           containers.map(async (c) => {
             try {
               const logs = await firstValueFrom(
-                this.http.get(url, { params: { containerId: c.id, tail }, responseType: 'text' })
+                this.http.get(url, {
+                  params: nodeId ? { containerId: c.id, tail, nodeId } : { containerId: c.id, tail },
+                  responseType: 'text',
+                })
               );
               return { name: c.name, logs: logs ?? '' };
             } catch (err) {
@@ -188,7 +197,10 @@ export class Detail implements OnInit {
         this.consoleLogs.set(merged || '(no output from any container)');
       } else {
         const logs = await firstValueFrom(
-          this.http.get(url, { params: { containerId, tail }, responseType: 'text' })
+          this.http.get(url, {
+            params: nodeId ? { containerId, tail, nodeId } : { containerId, tail },
+            responseType: 'text',
+          })
         );
         this.consoleLogs.set(logs || '(no output)');
       }

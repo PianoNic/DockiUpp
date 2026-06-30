@@ -11,6 +11,8 @@ namespace DockiUp.Application.Dtos
         public required string DockerProjectName { get; set; }
         public required string ProjectDescription { get; set; }
         public required bool ManagedByDockiUp { get; set; }
+        /// <summary>The node this project runs on, or null for the local control-plane host.</summary>
+        public Guid? NodeId { get; set; }
         public required ContainerDto[] Containers { get; set; }
         /// <summary>Project path on disk when managed.</summary>
         public string? ProjectPath { get; set; }

@@ -8,6 +8,12 @@ namespace DockiUp.Application.Interfaces
     public interface IDockerService
     {
         Task<ProjectDto[]> GetProjectsAsync();
+
+        /// <summary>Daemon-only project listing: no database reconciliation (Id/ManagedByDockiUp left
+        /// unset). Safe to run on a node, which has no application database; the control plane reconciles
+        /// the returned projects against its own records.</summary>
+        Task<ProjectDto[]> GetRawProjectsAsync();
+
         Task<ProjectDto?> GetProjectByDockerNameAsync(string dockerProjectName);
         Task<ContainerDto?> InspectContainerAsync(string containerId, CancellationToken cancellationToken = default);
 

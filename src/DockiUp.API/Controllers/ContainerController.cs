@@ -20,11 +20,11 @@ namespace DockiUp.API.Controllers
         [HttpGet("GetContainer", Name = "GetContainer")]
         [ProducesResponseType(typeof(ContainerDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ContainerDto>> GetContainer([FromQuery] string containerId)
+        public async Task<ActionResult<ContainerDto>> GetContainer([FromQuery] string containerId, [FromQuery] Guid? nodeId = null)
         {
             try
             {
-                var container = await _mediator.Send(new GetContainerQuery(containerId), HttpContext.RequestAborted);
+                var container = await _mediator.Send(new GetContainerQuery(containerId, nodeId), HttpContext.RequestAborted);
                 return Ok(container);
             }
             catch (KeyNotFoundException)
@@ -36,38 +36,38 @@ namespace DockiUp.API.Controllers
         [HttpPost("StartContainer", Name = "StartContainer")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> StartContainer([FromQuery] string containerId)
+        public async Task<ActionResult> StartContainer([FromQuery] string containerId, [FromQuery] Guid? nodeId = null)
         {
-            await _mediator.Send(new StartContainerCommand(containerId), HttpContext.RequestAborted);
+            await _mediator.Send(new StartContainerCommand(containerId, nodeId), HttpContext.RequestAborted);
             return NoContent();
         }
 
         [HttpPost("StopContainer", Name = "StopContainer")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> StopContainer([FromQuery] string containerId)
+        public async Task<ActionResult> StopContainer([FromQuery] string containerId, [FromQuery] Guid? nodeId = null)
         {
-            await _mediator.Send(new StopContainerCommand(containerId), HttpContext.RequestAborted);
+            await _mediator.Send(new StopContainerCommand(containerId, nodeId), HttpContext.RequestAborted);
             return NoContent();
         }
 
         [HttpPost("RestartContainer", Name = "RestartContainer")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> RestartContainer([FromQuery] string containerId)
+        public async Task<ActionResult> RestartContainer([FromQuery] string containerId, [FromQuery] Guid? nodeId = null)
         {
-            await _mediator.Send(new RestartContainerCommand(containerId), HttpContext.RequestAborted);
+            await _mediator.Send(new RestartContainerCommand(containerId, nodeId), HttpContext.RequestAborted);
             return NoContent();
         }
 
         [HttpGet("GetContainerLogs", Name = "GetContainerLogs")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<string>> GetContainerLogs([FromQuery] string containerId, [FromQuery] int? tail = 200)
+        public async Task<ActionResult<string>> GetContainerLogs([FromQuery] string containerId, [FromQuery] int? tail = 200, [FromQuery] Guid? nodeId = null)
         {
             try
             {
-                var logs = await _mediator.Send(new GetContainerLogsQuery(containerId, tail), HttpContext.RequestAborted);
+                var logs = await _mediator.Send(new GetContainerLogsQuery(containerId, tail, nodeId), HttpContext.RequestAborted);
                 return Ok(logs);
             }
             catch (KeyNotFoundException)
