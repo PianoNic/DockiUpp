@@ -21,6 +21,8 @@ import { environment } from '../../environments/environment';
 export class ContainerTerminal implements AfterViewInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   protected readonly containerId = this.route.snapshot.paramMap.get('containerId') ?? '';
+  // The node the container runs on (absent/empty = local control-plane host).
+  private readonly nodeId = this.route.snapshot.queryParamMap.get('nodeId') || null;
   protected readonly status = signal<'connecting' | 'open' | 'closed'>('connecting');
 
   private readonly hostRef = viewChild<ElementRef<HTMLDivElement>>('term');
@@ -79,7 +81,7 @@ export class ContainerTerminal implements AfterViewInit, OnDestroy {
 
     try {
       await conn.start();
-      const sessionId = await conn.invoke<string>('StartExec', this.containerId, term.cols, term.rows);
+      const sessionId = await conn.invoke<string>('StartExec', this.containerId, term.cols, term.rows, this.nodeId);
       this.sessionId = sessionId;
       this.status.set('open');
 
