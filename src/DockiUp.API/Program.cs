@@ -12,6 +12,11 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// When Node:ControlPlaneUrl is set this process boots in the "node" role: it owns no application
+// database and only drives its local Docker daemon over the agent connection. Anything that touches
+// the database (migrations, DB-polling background work) is therefore control-plane-only.
+var isNodeRole = !string.IsNullOrWhiteSpace(builder.Configuration["Node:ControlPlaneUrl"]);
+
 #region Configure Services
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -29,8 +34,12 @@ builder.Services.Configure<DockiUp.API.HostedServices.PeriodicUpdateOptions>(opt
 {
     options.PollInterval = TimeSpan.FromMinutes(1);
 });
-builder.Services.AddHostedService<DockiUp.API.HostedServices.PeriodicUpdateHostedService>();
-builder.Services.AddHostedService<DockiUp.API.HostedServices.ContainerStateBroadcastHostedService>();
+// These poll the project database, so they only run on the control plane.
+if (!isNodeRole)
+{
+    builder.Services.AddHostedService<DockiUp.API.HostedServices.PeriodicUpdateHostedService>();
+    builder.Services.AddHostedService<DockiUp.API.HostedServices.ContainerStateBroadcastHostedService>();
+}
 
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<IDockiUpHubBroadcastService, DockiUpHubBroadcastService>();
@@ -49,7 +58,7 @@ builder.Services.AddSingleton<INodeRegistry, NodeRegistry>();
 
 // When Node:ControlPlaneUrl is set this process boots in the "node" role and dials out to the
 // control plane; otherwise it IS the control plane and hosts the hub + Nodes API.
-if (!string.IsNullOrWhiteSpace(builder.Configuration["Node:ControlPlaneUrl"]))
+if (isNodeRole)
 {
     // A node always uses its own daemon, so it resolves Docker locally and never re-routes.
     builder.Services.AddScoped<IDockerServiceResolver, LocalDockerServiceResolver>();
@@ -106,7 +115,8 @@ if (app.Environment.IsProduction())
 }
 
 #region Database Initialization with Retry Logic
-bool dbConnected = false;
+// A node has no application database, so it must not try to connect or migrate on boot.
+bool dbConnected = isNodeRole;
 int retryCount = 0;
 const int maxRetries = 10;
 const int retryDelaySeconds = 5;

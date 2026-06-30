@@ -17,18 +17,21 @@ namespace DockiUp.Application.Commands
 
     public sealed class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand>
     {
-        private readonly IDockerService _dockerService;
+        private readonly IDockerServiceResolver _dockerResolver;
         private readonly IDockiUpDbContext _dbContext;
         private readonly IDockiUpProjectConfigurationService _projectConfigurationService;
+        private readonly INodeRpc _nodeRpc;
 
         public UpdateProjectCommandHandler(
-            IDockerService dockerService,
+            IDockerServiceResolver dockerResolver,
             IDockiUpDbContext dbContext,
-            IDockiUpProjectConfigurationService projectConfigurationService)
+            IDockiUpProjectConfigurationService projectConfigurationService,
+            INodeRpc nodeRpc)
         {
-            _dockerService = dockerService;
+            _dockerResolver = dockerResolver;
             _dbContext = dbContext;
             _projectConfigurationService = projectConfigurationService;
+            _nodeRpc = nodeRpc;
         }
 
         public async ValueTask<Unit> Handle(UpdateProjectCommand request, CancellationToken cancellationToken)
@@ -37,9 +40,16 @@ namespace DockiUp.Application.Commands
             if (project == null)
                 throw new KeyNotFoundException($"Project with id {request.ProjectId} not found.");
 
+            // The git pull must happen where the checkout lives - on the node for node-hosted projects.
             if (project.ProjectOrigin == ProjectOriginType.Git)
-                await _projectConfigurationService.UpdateRepositoy(project.Id);
-            await _dockerService.RestartProjectAsync(project.ProjectPath);
+            {
+                if (project.NodeId is Guid nodeId)
+                    await _nodeRpc.InvokeAsync<bool>(nodeId, "PullRepository", new object?[] { project.ProjectPath }, cancellationToken);
+                else
+                    await _projectConfigurationService.UpdateRepositoryAsync(project.ProjectPath);
+            }
+
+            await _dockerResolver.Resolve(project.NodeId).RestartProjectAsync(project.ProjectPath);
             return default;
         }
     }
