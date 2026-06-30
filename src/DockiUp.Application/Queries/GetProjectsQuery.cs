@@ -60,9 +60,12 @@ namespace DockiUp.Application.Queries
                     continue;
                 }
 
-                var dbProjects = await _dbContext.ProjectInfo
-                    .Where(p => p.NodeId == nodeId)
-                    .ToDictionaryAsync(p => p.DockerProjectName, cancellationToken);
+                // Last-wins on colliding docker names so the listing never throws.
+                var dbProjects = (await _dbContext.ProjectInfo
+                        .Where(p => p.NodeId == nodeId)
+                        .ToListAsync(cancellationToken))
+                    .GroupBy(p => p.DockerProjectName)
+                    .ToDictionary(g => g.Key, g => g.Last());
 
                 foreach (var project in nodeProjects)
                 {
