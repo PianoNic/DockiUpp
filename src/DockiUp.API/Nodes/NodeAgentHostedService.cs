@@ -1,6 +1,10 @@
 using System.Runtime.InteropServices;
+using DockiUp.Application.Dtos;
 using DockiUp.Application.Interfaces;
+using DockiUp.Application.Models;
+using DockiUp.Domain.Enums;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Options;
 
 namespace DockiUp.API.Nodes
 {
@@ -49,6 +53,8 @@ namespace DockiUp.API.Nodes
 
             // Server -> node calls. Ping is the phase-1 channel proof.
             _connection.On("Ping", () => "pong");
+            RegisterDockerHandlers(_connection);
+            RegisterProjectHandlers(_connection);
 
             // Re-register after every (re)connect, since the registry is keyed by connection id and a
             // reconnect yields a fresh one.
@@ -132,6 +138,61 @@ namespace DockiUp.API.Nodes
             {
                 logger.LogWarning("Node agent failed to register: {Message}", ex.Message);
             }
+        }
+
+        // The control plane invokes these on the node's connection (RemoteDockerService); each runs
+        // against the node's local Docker daemon and returns the result. Void Docker ops return a bool
+        // because SignalR client-result invocations must return a value.
+        private void RegisterDockerHandlers(HubConnection c)
+        {
+            c.On("GetProjects", () => WithDocker(d => d.GetProjectsAsync()));
+            c.On<string, ProjectDto?>("GetProjectByDockerName", name => WithDocker(d => d.GetProjectByDockerNameAsync(name)));
+            c.On<string, ContainerDto?>("InspectContainer", id => WithDocker(d => d.InspectContainerAsync(id)));
+            c.On<string, bool>("StartProject", path => WithDocker(async d => { await d.StartProjectAsync(path); return true; }));
+            c.On<string, bool>("StopProject", path => WithDocker(async d => { await d.StopProjectAsync(path); return true; }));
+            c.On<string, bool>("RestartProject", path => WithDocker(async d => { await d.RestartProjectAsync(path); return true; }));
+            c.On<string, bool>("StartContainer", id => WithDocker(async d => { await d.StartContainerAsync(id); return true; }));
+            c.On<string, bool>("StopContainer", id => WithDocker(async d => { await d.StopContainerAsync(id); return true; }));
+            c.On<string, bool>("RestartContainer", id => WithDocker(async d => { await d.RestartContainerAsync(id); return true; }));
+            c.On<string, int?, string>("GetContainerLogs", (id, tail) => WithDocker(d => d.GetContainerLogsAsync(id, tail)));
+        }
+
+        // Deploy + git-pull run against the node's own filesystem (no app database here), so the node
+        // clones/writes/composes locally and reports the paths it used back to the control plane.
+        private void RegisterProjectHandlers(HubConnection c)
+        {
+            c.On<SetupProjectDto, NodeDeployResultDto>("DeployProject", DeployLocallyAsync);
+            c.On<string, bool>("PullRepository", path => WithConfig(async cfg => { await cfg.UpdateRepositoryAsync(path); return true; }));
+        }
+
+        private async Task<NodeDeployResultDto> DeployLocallyAsync(SetupProjectDto dto)
+        {
+            using var scope = services.CreateScope();
+            var paths = scope.ServiceProvider.GetRequiredService<IOptions<SystemPaths>>().Value;
+            var config = scope.ServiceProvider.GetRequiredService<IDockiUpProjectConfigurationService>();
+            var docker = scope.ServiceProvider.GetRequiredService<IDockerService>();
+
+            var projectPath = Path.Combine(paths.ProjectsPath, dto.ProjectName);
+            Directory.CreateDirectory(projectPath);
+
+            if (dto.ProjectOrigin == ProjectOriginType.Git)
+                await config.CloneRepositoryAsync(projectPath, dto.GitUrl!);
+            var composePath = await config.WriteComposeFileAsync(projectPath, dto.Compose!);
+            await docker.StartProjectAsync(projectPath);
+
+            return new NodeDeployResultDto(projectPath, composePath);
+        }
+
+        private async Task<T> WithDocker<T>(Func<IDockerService, Task<T>> work)
+        {
+            using var scope = services.CreateScope();
+            return await work(scope.ServiceProvider.GetRequiredService<IDockerService>());
+        }
+
+        private async Task<T> WithConfig<T>(Func<IDockiUpProjectConfigurationService, Task<T>> work)
+        {
+            using var scope = services.CreateScope();
+            return await work(scope.ServiceProvider.GetRequiredService<IDockiUpProjectConfigurationService>());
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)

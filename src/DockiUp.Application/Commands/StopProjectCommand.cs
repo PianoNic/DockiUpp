@@ -19,37 +19,37 @@ namespace DockiUp.Application.Commands
 
     public sealed class StopProjectCommandHandler : IRequestHandler<StopProjectCommand>
     {
-        private readonly IDockerService _dockerService;
+        private readonly IDockerServiceResolver _dockerResolver;
         private readonly IDockiUpDbContext _dbContext;
 
-        public StopProjectCommandHandler(IDockerService dockerService, IDockiUpDbContext dbContext)
+        public StopProjectCommandHandler(IDockerServiceResolver dockerResolver, IDockiUpDbContext dbContext)
         {
-            _dockerService = dockerService;
+            _dockerResolver = dockerResolver;
             _dbContext = dbContext;
         }
 
         public async ValueTask<Unit> Handle(StopProjectCommand request, CancellationToken cancellationToken)
         {
-            string projectPath = await ResolveProjectPathAsync(request, cancellationToken);
-            await _dockerService.StopProjectAsync(projectPath);
+            var (projectPath, nodeId) = await ResolveProjectAsync(request, cancellationToken);
+            await _dockerResolver.Resolve(nodeId).StopProjectAsync(projectPath);
             return default;
         }
 
-        private async Task<string> ResolveProjectPathAsync(StopProjectCommand request, CancellationToken cancellationToken)
+        private async Task<(string ProjectPath, Guid? NodeId)> ResolveProjectAsync(StopProjectCommand request, CancellationToken cancellationToken)
         {
             if (request.ProjectId.HasValue)
             {
                 var project = await _dbContext.ProjectInfo.FindAsync([request.ProjectId.Value], cancellationToken);
                 if (project == null)
                     throw new KeyNotFoundException($"Project with id {request.ProjectId} not found.");
-                return project.ProjectPath;
+                return (project.ProjectPath, project.NodeId);
             }
             if (!string.IsNullOrWhiteSpace(request.DockerProjectName))
             {
                 var dbProject = await _dbContext.ProjectInfo
                     .SingleOrDefaultAsync(p => p.DockerProjectName == request.DockerProjectName, cancellationToken);
                 if (dbProject != null)
-                    return dbProject.ProjectPath;
+                    return (dbProject.ProjectPath, dbProject.NodeId);
                 throw new KeyNotFoundException($"Project '{request.DockerProjectName}' not found or not managed by DockiUp.");
             }
             throw new ArgumentException("Provide either ProjectId or DockerProjectName.");

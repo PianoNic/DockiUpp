@@ -1,4 +1,4 @@
-﻿using DockiUp.Application.Interfaces;
+using DockiUp.Application.Interfaces;
 using LibGit2Sharp;
 using System.Text;
 
@@ -7,26 +7,18 @@ namespace DockiUp.Infrastructure.Services
     public class DockiUpProjectConfigurationService : IDockiUpProjectConfigurationService
     {
         private const string ComposeFileName = "dockiup_compose.yml";
-        private readonly DockiUpDbContext _dbContext;
-        public DockiUpProjectConfigurationService(DockiUpDbContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
 
         public async Task CloneRepositoryAsync(string projectPath, string gitUrl)
         {
             await Task.Run(() => Repository.Clone(gitUrl, projectPath));
         }
 
-        public async Task UpdateRepositoy(Guid projectId)
+        public async Task UpdateRepositoryAsync(string projectPath)
         {
-            var projectInfo = await _dbContext.ProjectInfo.FindAsync(projectId);
-
-            if (projectInfo == null)
-                throw new ArgumentException("Project does not Exist");
-
-            using (var repo = new Repository(projectInfo.ProjectPath))
+            await Task.Run(() =>
             {
+                using var repo = new Repository(projectPath);
+
                 Commands.Fetch(repo, "origin", Array.Empty<string>(), null, "");
 
                 Branch branch = repo.Branches["main"] ?? repo.Branches["master"];
@@ -65,7 +57,7 @@ namespace DockiUp.Infrastructure.Services
                 {
                     Console.WriteLine($"Pull completed with status: {mergeResult.Status}");
                 }
-            }
+            });
         }
 
         public async Task<string> WriteComposeFileAsync(string projectPath, string composeContent)

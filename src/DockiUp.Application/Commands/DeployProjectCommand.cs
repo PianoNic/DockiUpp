@@ -25,87 +25,77 @@ namespace DockiUp.Application.Commands
         private readonly SystemPaths _systemPaths;
         private readonly IDockiUpProjectConfigurationService _projectConfigurationService;
         private readonly IActivityLogger _activityLogger;
+        private readonly INodeRpc _nodeRpc;
 
-        public DeployProjectCommandHandler(IDockerService dockerService, IOptions<SystemPaths> systemPaths, IDockiUpProjectConfigurationService projectConfigurationService, IDockiUpDbContext dbContext, IActivityLogger activityLogger)
+        public DeployProjectCommandHandler(IDockerService dockerService, IOptions<SystemPaths> systemPaths, IDockiUpProjectConfigurationService projectConfigurationService, IDockiUpDbContext dbContext, IActivityLogger activityLogger, INodeRpc nodeRpc)
         {
             _dockerService = dockerService;
             _systemPaths = systemPaths.Value;
             _projectConfigurationService = projectConfigurationService;
             _dbContext = dbContext;
             _activityLogger = activityLogger;
+            _nodeRpc = nodeRpc;
         }
 
         public async ValueTask<Unit> Handle(DeployProjectCommand request, CancellationToken cancellationToken)
         {
-            string containerFolderPath = Path.Combine(_systemPaths.ProjectsPath, request.SetupContainerDto.ProjectName);
-            Directory.CreateDirectory(containerFolderPath);
+            var dto = request.SetupContainerDto;
 
-            if (request.SetupContainerDto.ProjectOrigin == ProjectOriginType.Compose)
+            // Import has nothing to write or start yet (parity with the previous handler).
+            if (dto.ProjectOrigin == ProjectOriginType.Import)
             {
-                await HandleComposeProjectDeploymentAsync(request, containerFolderPath, cancellationToken);
-            }
-            else if (request.SetupContainerDto.ProjectOrigin == ProjectOriginType.Git)
-            {
-                await HandleGitProjectDeploymentAsync(request, containerFolderPath, cancellationToken);
-            }
-            else if (request.SetupContainerDto.ProjectOrigin == ProjectOriginType.Import)
-            {
-
+                await _activityLogger.LogAsync("deploy", dto.ProjectName,
+                    details: dto.ProjectOrigin.ToString(), cancellationToken: cancellationToken);
+                return default;
             }
 
-            await _activityLogger.LogAsync("deploy", request.SetupContainerDto.ProjectName,
-                details: request.SetupContainerDto.ProjectOrigin.ToString(), cancellationToken: cancellationToken);
+            string projectPath;
+            string composePath;
+
+            if (dto.NodeId is Guid nodeId)
+            {
+                // Ship the whole definition to the node; it clones/writes/composes on its own filesystem
+                // (it has no app database) and reports back the paths it used.
+                var result = await _nodeRpc.InvokeAsync<NodeDeployResultDto>(
+                    nodeId, "DeployProject", new object?[] { dto }, cancellationToken);
+                projectPath = result.ProjectPath;
+                composePath = result.ComposePath;
+            }
+            else
+            {
+                projectPath = Path.Combine(_systemPaths.ProjectsPath, dto.ProjectName);
+                Directory.CreateDirectory(projectPath);
+                if (dto.ProjectOrigin == ProjectOriginType.Git)
+                    await _projectConfigurationService.CloneRepositoryAsync(projectPath, dto.GitUrl!);
+                composePath = await _projectConfigurationService.WriteComposeFileAsync(projectPath, dto.Compose!);
+                await _dockerService.StartProjectAsync(projectPath);
+            }
+
+            // The control plane always owns the project row, even for node-hosted projects.
+            var projectInfo = new ProjectInfo
+            {
+                ProjectName = dto.ProjectName,
+                DockerProjectName = new string(dto.ProjectName.ToLower().Where(c => !char.IsWhiteSpace(c)).ToArray()),
+                Description = dto.Description,
+
+                ProjectOrigin = dto.ProjectOrigin,
+                GitUrl = dto.GitUrl,
+                NodeId = dto.NodeId,
+                ProjectPath = projectPath,
+                ComposePath = composePath,
+
+                ProjectUpdateMethod = dto.ProjectUpdateMethod,
+                WebhookUrl = dto.WebhookUrl,
+                PeriodicIntervalInMinutes = dto.PeriodicIntervalInMinutes
+            };
+
+            await _dbContext.ProjectInfo.AddAsync(projectInfo, cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+
+            await _activityLogger.LogAsync("deploy", dto.ProjectName,
+                details: dto.ProjectOrigin.ToString(), cancellationToken: cancellationToken);
 
             return default;
-        }
-
-        private async Task HandleGitProjectDeploymentAsync(DeployProjectCommand request, string containerFolderPath, CancellationToken cancellationToken)
-        {
-            await _projectConfigurationService.CloneRepositoryAsync(containerFolderPath, request.SetupContainerDto.GitUrl!);
-            var composeFilePath = await _projectConfigurationService.WriteComposeFileAsync(containerFolderPath, request.SetupContainerDto.Compose!);
-            await _dockerService.StartProjectAsync(containerFolderPath);
-
-            var projectInfo = new ProjectInfo
-            {
-                ProjectName = request.SetupContainerDto.ProjectName,
-                DockerProjectName = new string(request.SetupContainerDto.ProjectName.ToLower().Where(c => !char.IsWhiteSpace(c)).ToArray()),
-                Description = request.SetupContainerDto.Description,
-
-                ProjectOrigin = request.SetupContainerDto.ProjectOrigin,
-                ProjectPath = containerFolderPath,
-                ComposePath = composeFilePath,
-
-                ProjectUpdateMethod = request.SetupContainerDto.ProjectUpdateMethod,
-                WebhookUrl = request.SetupContainerDto.WebhookUrl,
-                PeriodicIntervalInMinutes = request.SetupContainerDto.PeriodicIntervalInMinutes
-            };
-
-            await _dbContext.ProjectInfo.AddAsync(projectInfo, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-        }
-
-        private async Task HandleComposeProjectDeploymentAsync(DeployProjectCommand request, string containerFolderPath, CancellationToken cancellationToken)
-        {
-            var composeFilePath = await _projectConfigurationService.WriteComposeFileAsync(containerFolderPath, request.SetupContainerDto.Compose!);
-            await _dockerService.StartProjectAsync(containerFolderPath);
-
-            var projectInfo = new ProjectInfo
-            {
-                ProjectName = request.SetupContainerDto.ProjectName,
-                DockerProjectName = new string(request.SetupContainerDto.ProjectName.ToLower().Where(c => !char.IsWhiteSpace(c)).ToArray()),
-                Description = request.SetupContainerDto.Description,
-
-                ProjectOrigin = request.SetupContainerDto.ProjectOrigin,
-                ProjectPath = containerFolderPath,
-                ComposePath = composeFilePath,
-
-                ProjectUpdateMethod = request.SetupContainerDto.ProjectUpdateMethod,
-                WebhookUrl = request.SetupContainerDto.WebhookUrl,
-                PeriodicIntervalInMinutes = request.SetupContainerDto.PeriodicIntervalInMinutes
-            };
-
-            await _dbContext.ProjectInfo.AddAsync(projectInfo, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
         }
     }
 }

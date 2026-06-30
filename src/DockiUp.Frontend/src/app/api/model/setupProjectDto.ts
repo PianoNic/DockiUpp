@@ -17,6 +17,7 @@ export interface SetupProjectDto {
     gitUrl?: string | null;
     compose?: string | null;
     path?: string | null;
+    nodeId?: string | null;
     projectUpdateMethod: number;
     webhookUrl?: string | null;
     periodicIntervalInMinutes?: ProblemDetailsStatus | null;
