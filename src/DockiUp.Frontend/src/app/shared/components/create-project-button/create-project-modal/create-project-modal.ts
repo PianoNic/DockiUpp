@@ -8,7 +8,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { SetupProjectDto } from '../../../../api';
+import { MatSelectModule } from '@angular/material/select';
+import { NodeDto, NodesService, SetupProjectDto } from '../../../../api';
 import { ProjectOriginType, ProjectUpdateMethod, UpdateMethodType } from '../../../models/api-enums';
 
 
@@ -25,7 +26,8 @@ import { ProjectOriginType, ProjectUpdateMethod, UpdateMethodType } from '../../
     MatInputModule,
     MatButtonModule,
     MatRadioModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatSelectModule
   ],
   templateUrl: './create-project-modal.html',
   styleUrl: './create-project-modal.scss'
@@ -34,6 +36,10 @@ export class CreateProjectModal implements OnInit {
   public isloading = signal(false);
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<CreateProjectModal>);
+  private nodesService = inject(NodesService);
+
+  // Online nodes the project can be deployed to; empty means single-host (local only).
+  readonly nodes = signal<NodeDto[]>([]);
 
   // Enums for template
   readonly ProjectOriginType = ProjectOriginType;
@@ -69,7 +75,9 @@ export class CreateProjectModal implements OnInit {
     // Initialize forms
     this.projectInformationFormGroup = this.fb.group({
       projectName: ['', [Validators.required, Validators.maxLength(20)]],
-      description: ['']
+      description: [''],
+      // Empty string = deploy on the local control-plane host; a node id = deploy to that node.
+      nodeId: ['']
     });
 
     this.projectOriginFormGroup = this.fb.group({
@@ -87,6 +95,12 @@ export class CreateProjectModal implements OnInit {
   }
 
   ngOnInit() {
+    // Offer online nodes as deploy targets; if none are connected the selector stays hidden.
+    this.nodesService.apiNodesGet().subscribe({
+      next: nodes => this.nodes.set(nodes.filter(n => n.online)),
+      error: () => this.nodes.set([])
+    });
+
     // Setup path autocomplete
     this.pathValue.set(this.projectOriginFormGroup.get('path')?.value || '');
     this.projectOriginFormGroup.get('path')?.valueChanges.subscribe(val => {
@@ -273,6 +287,7 @@ export class CreateProjectModal implements OnInit {
     const result: SetupProjectDto = {
       projectName: info.projectName ?? null,
       description: info.description ?? null,
+      nodeId: info.nodeId || null,
       projectOrigin: origin.originType,
       gitUrl: origin.originType === ProjectOriginType.Git ? origin.gitUrl ?? null : null,
       // Set compose for both Git and Compose origin types

@@ -29,6 +29,18 @@
           <mat-label>Description</mat-label>
           <textarea matInput placeholder="Describe your project" rows="5" formControlName="description"></textarea>
         </mat-form-field>
+
+        @if (nodes().length > 0) {
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Deploy to</mat-label>
+          <mat-select formControlName="nodeId">
+            <mat-option [value]="''">Local (this host)</mat-option>
+            @for (node of nodes(); track node.id) {
+            <mat-option [value]="node.id">{{ node.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        }
       </form>
     </mat-step>
 
