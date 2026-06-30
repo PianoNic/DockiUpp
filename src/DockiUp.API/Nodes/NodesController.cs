@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using DockiUp.Application.Interfaces;
 using DockiUp.Infrastructure;
 using DockiUp.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +14,8 @@ namespace DockiUp.API.Nodes
         DockiUpDbContext db,
         INodeRegistry registry,
         IHubContext<NodeHub> hub,
-        IConfiguration configuration) : ControllerBase
+        IConfiguration configuration,
+        IActivityLogger activity) : ControllerBase
     {
         [HttpGet]
         [ProducesResponseType(typeof(IReadOnlyList<NodeDto>), StatusCodes.Status200OK)]
@@ -77,6 +79,7 @@ namespace DockiUp.API.Nodes
             var node = new Domain.Node { Name = name, TokenHash = NodeTokenHasher.Hash(request.Token) };
             db.Nodes.Add(node);
             await db.SaveChangesAsync(cancellationToken);
+            await activity.LogAsync("node.create", node.Name, cancellationToken: cancellationToken);
 
             var dto = new NodeDto(node.Id, node.Name, node.MachineName, node.Os, node.DockerVersion,
                 Online: false, Pending: true, node.CreatedAt, node.LastSeenAt);
@@ -94,6 +97,7 @@ namespace DockiUp.API.Nodes
 
             db.Nodes.Remove(node);
             await db.SaveChangesAsync(cancellationToken);
+            await activity.LogAsync("node.delete", node.Name, cancellationToken: cancellationToken);
             return NoContent();
         }
 
