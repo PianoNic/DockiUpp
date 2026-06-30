@@ -62,7 +62,12 @@ namespace DockiUp.Infrastructure.Services
         public async Task<ProjectDto[]> GetProjectsAsync()
         {
             var projects = await GetRawProjectsAsync();
-            var dbProjects = _dbContext.ProjectInfo.ToDictionary(a => a.DockerProjectName);
+            // Tolerate colliding docker names (two projects can normalize to the same one): last wins,
+            // rather than throwing and taking down the whole listing.
+            var dbProjects = _dbContext.ProjectInfo
+                .AsEnumerable()
+                .GroupBy(a => a.DockerProjectName)
+                .ToDictionary(g => g.Key, g => g.Last());
 
             foreach (var project in projects)
             {
