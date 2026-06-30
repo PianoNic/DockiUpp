@@ -7,24 +7,26 @@ namespace DockiUp.Application.Queries
     public sealed class GetContainerQuery : IRequest<ContainerDto>
     {
         public string ContainerId { get; }
-        public GetContainerQuery(string containerId)
+        public Guid? NodeId { get; }
+        public GetContainerQuery(string containerId, Guid? nodeId = null)
         {
             ContainerId = containerId;
+            NodeId = nodeId;
         }
     }
 
     public sealed class GetContainerQueryHandler : IRequestHandler<GetContainerQuery, ContainerDto>
     {
-        private readonly IDockerService _dockerService;
+        private readonly IDockerServiceResolver _dockerResolver;
 
-        public GetContainerQueryHandler(IDockerService dockerService)
+        public GetContainerQueryHandler(IDockerServiceResolver dockerResolver)
         {
-            _dockerService = dockerService;
+            _dockerResolver = dockerResolver;
         }
 
         public async ValueTask<ContainerDto> Handle(GetContainerQuery request, CancellationToken cancellationToken)
         {
-            var inspect = await _dockerService.InspectContainerAsync(request.ContainerId, cancellationToken);
+            var inspect = await _dockerResolver.Resolve(request.NodeId).InspectContainerAsync(request.ContainerId, cancellationToken);
             if (inspect == null)
                 throw new KeyNotFoundException($"Container {request.ContainerId} not found.");
             return inspect;

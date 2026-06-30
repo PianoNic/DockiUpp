@@ -17,7 +17,12 @@ namespace DockiUp.API.Nodes
             return hub.Clients.Client(connectionId);
         }
 
+        // A node has no application database, so it can only ever return raw (unreconciled) projects;
+        // the control plane reconciles them against its own records. Both entry points hit the same call.
         public Task<ProjectDto[]> GetProjectsAsync()
+            => Node().InvokeAsync<ProjectDto[]>("GetProjects", CancellationToken.None);
+
+        public Task<ProjectDto[]> GetRawProjectsAsync()
             => Node().InvokeAsync<ProjectDto[]>("GetProjects", CancellationToken.None);
 
         public Task<ProjectDto?> GetProjectByDockerNameAsync(string dockerProjectName)

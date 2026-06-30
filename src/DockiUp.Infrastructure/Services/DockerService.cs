@@ -18,12 +18,10 @@ namespace DockiUp.Infrastructure.Services
             _dbContext = dbContext;
         }
 
-        public async Task<ProjectDto[]> GetProjectsAsync()
+        public async Task<ProjectDto[]> GetRawProjectsAsync()
         {
             var containers = await _dockiUpDockerClient.DockerClient.Containers
                 .ListContainersAsync(new ContainersListParameters { All = true });
-
-            var dbContainers = _dbContext.ProjectInfo.ToDictionary(a => a.DockerProjectName);
 
             return containers
                 .Select(container =>
@@ -48,23 +46,38 @@ namespace DockiUp.Infrastructure.Services
                 .Where(dto => dto != null)
                 .Cast<ContainerDto>()
                 .GroupBy(containerDto => containerDto.ProjectName)
-                .Select(group =>
+                .Select(group => new ProjectDto
                 {
-                    bool success = dbContainers.TryGetValue(group.Key, out var output);
-                    var proj = output!;
-
-                    return new ProjectDto
-                    {
-                        Id = success ? proj.Id : null,
-                        ProjectName = success ? proj.ProjectName : group.Key,
-                        ProjectDescription = success ? (proj.Description ?? "Not Managed By DockiUp") : "Not Managed By DockiUp",
-                        ManagedByDockiUp = success,
-                        DockerProjectName = group.Key,
-                        Containers = group.ToArray(),
-                        ProjectPath = success ? proj.ProjectPath : null,
-                        UpdateMethod = success ? proj.ProjectUpdateMethod.ToString() : null
-                    };
+                    Id = null,
+                    ProjectName = group.Key,
+                    ProjectDescription = "Not Managed By DockiUp",
+                    ManagedByDockiUp = false,
+                    DockerProjectName = group.Key,
+                    Containers = group.ToArray(),
+                    ProjectPath = null,
+                    UpdateMethod = null
                 }).ToArray();
+        }
+
+        public async Task<ProjectDto[]> GetProjectsAsync()
+        {
+            var projects = await GetRawProjectsAsync();
+            var dbProjects = _dbContext.ProjectInfo.ToDictionary(a => a.DockerProjectName);
+
+            foreach (var project in projects)
+            {
+                if (dbProjects.TryGetValue(project.DockerProjectName, out var proj))
+                {
+                    project.Id = proj.Id;
+                    project.ProjectName = proj.ProjectName;
+                    project.ProjectDescription = proj.Description ?? "Not Managed By DockiUp";
+                    project.ManagedByDockiUp = true;
+                    project.NodeId = proj.NodeId;
+                    project.ProjectPath = proj.ProjectPath;
+                    project.UpdateMethod = proj.ProjectUpdateMethod.ToString();
+                }
+            }
+            return projects;
         }
 
         public async Task<ProjectDto?> GetProjectByDockerNameAsync(string dockerProjectName)

@@ -19,12 +19,14 @@ namespace DockiUp.Application.Queries
 
     public sealed class GetProjectQueryHandler : IRequestHandler<GetProjectQuery, ProjectDto?>
     {
-        private readonly IDockerService _dockerService;
+        private readonly IDockerService _localDocker;
+        private readonly IDockerServiceResolver _dockerResolver;
         private readonly IDockiUpDbContext _dbContext;
 
-        public GetProjectQueryHandler(IDockerService dockerService, IDockiUpDbContext dbContext)
+        public GetProjectQueryHandler(IDockerService localDocker, IDockerServiceResolver dockerResolver, IDockiUpDbContext dbContext)
         {
-            _dockerService = dockerService;
+            _localDocker = localDocker;
+            _dockerResolver = dockerResolver;
             _dbContext = dbContext;
         }
 
@@ -35,7 +37,9 @@ namespace DockiUp.Application.Queries
                 var dbProject = await _dbContext.ProjectInfo.FindAsync([request.ProjectId.Value], cancellationToken);
                 if (dbProject == null)
                     return null;
-                var byName = await _dockerService.GetProjectByDockerNameAsync(dbProject.DockerProjectName);
+
+                // Read container status from wherever the project runs (local host or its node).
+                var byName = await _dockerResolver.Resolve(dbProject.NodeId).GetProjectByDockerNameAsync(dbProject.DockerProjectName);
                 if (byName == null)
                 {
                     return new ProjectDto
@@ -45,18 +49,23 @@ namespace DockiUp.Application.Queries
                         DockerProjectName = dbProject.DockerProjectName,
                         ProjectDescription = dbProject.Description ?? "",
                         ManagedByDockiUp = true,
+                        NodeId = dbProject.NodeId,
                         Containers = [],
                         ProjectPath = dbProject.ProjectPath,
                         UpdateMethod = dbProject.ProjectUpdateMethod.ToString()
                     };
                 }
                 byName.Id = dbProject.Id;
+                byName.ProjectName = dbProject.ProjectName;
+                byName.ProjectDescription = dbProject.Description ?? byName.ProjectDescription;
+                byName.ManagedByDockiUp = true;
+                byName.NodeId = dbProject.NodeId;
                 byName.ProjectPath = dbProject.ProjectPath;
                 byName.UpdateMethod = dbProject.ProjectUpdateMethod.ToString();
                 return byName;
             }
             if (!string.IsNullOrWhiteSpace(request.DockerProjectName))
-                return await _dockerService.GetProjectByDockerNameAsync(request.DockerProjectName);
+                return await _localDocker.GetProjectByDockerNameAsync(request.DockerProjectName);
             return null;
         }
     }

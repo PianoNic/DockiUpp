@@ -16,6 +16,7 @@ export interface ProjectDto {
     dockerProjectName: string;
     projectDescription: string;
     managedByDockiUp: boolean;
+    nodeId?: string | null;
     containers: Array<ContainerDto>;
     projectPath?: string | null;
     updateMethod?: string | null;

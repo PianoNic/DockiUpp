@@ -5,19 +5,24 @@ namespace DockiUp.Application.Commands
 {
     public sealed class StartContainerCommand : IRequest
     {
-        public StartContainerCommand(string containerId) => ContainerId = containerId;
+        public StartContainerCommand(string containerId, Guid? nodeId = null)
+        {
+            ContainerId = containerId;
+            NodeId = nodeId;
+        }
         public string ContainerId { get; }
+        public Guid? NodeId { get; }
     }
 
     public sealed class StartContainerCommandHandler : IRequestHandler<StartContainerCommand>
     {
-        private readonly IDockerService _dockerService;
+        private readonly IDockerServiceResolver _dockerResolver;
 
-        public StartContainerCommandHandler(IDockerService dockerService) => _dockerService = dockerService;
+        public StartContainerCommandHandler(IDockerServiceResolver dockerResolver) => _dockerResolver = dockerResolver;
 
         public async ValueTask<Unit> Handle(StartContainerCommand request, CancellationToken cancellationToken)
         {
-            await _dockerService.StartContainerAsync(request.ContainerId);
+            await _dockerResolver.Resolve(request.NodeId).StartContainerAsync(request.ContainerId);
             return default;
         }
     }

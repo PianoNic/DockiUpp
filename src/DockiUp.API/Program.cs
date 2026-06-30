@@ -63,6 +63,7 @@ if (isNodeRole)
     // A node always uses its own daemon, so it resolves Docker locally and never re-routes.
     builder.Services.AddScoped<IDockerServiceResolver, LocalDockerServiceResolver>();
     builder.Services.AddSingleton<INodeRpc, OfflineNodeRpc>();
+    builder.Services.AddSingleton<INodeDirectory, EmptyNodeDirectory>();
     builder.Services.AddHostedService<NodeAgentHostedService>();
 }
 else
@@ -70,6 +71,7 @@ else
     // Control plane: route Docker work to the local daemon or a node over SignalR, by the project's NodeId.
     builder.Services.AddScoped<IDockerServiceResolver, DockerServiceResolver>();
     builder.Services.AddSingleton<INodeRpc, NodeRpc>();
+    builder.Services.AddSingleton<INodeDirectory, NodeDirectory>();
 }
 #endregion
 #endregion

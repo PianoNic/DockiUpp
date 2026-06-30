@@ -145,8 +145,11 @@ namespace DockiUp.API.Nodes
         // because SignalR client-result invocations must return a value.
         private void RegisterDockerHandlers(HubConnection c)
         {
-            c.On("GetProjects", () => WithDocker(d => d.GetProjectsAsync()));
-            c.On<string, ProjectDto?>("GetProjectByDockerName", name => WithDocker(d => d.GetProjectByDockerNameAsync(name)));
+            // Raw (no DB reconciliation): the node has no application database; the control plane reconciles.
+            c.On("GetProjects", () => WithDocker(d => d.GetRawProjectsAsync()));
+            c.On<string, ProjectDto?>("GetProjectByDockerName", name => WithDocker(async d =>
+                (await d.GetRawProjectsAsync()).FirstOrDefault(p =>
+                    string.Equals(p.DockerProjectName, name, StringComparison.OrdinalIgnoreCase))));
             c.On<string, ContainerDto?>("InspectContainer", id => WithDocker(d => d.InspectContainerAsync(id)));
             c.On<string, bool>("StartProject", path => WithDocker(async d => { await d.StartProjectAsync(path); return true; }));
             c.On<string, bool>("StopProject", path => WithDocker(async d => { await d.StopProjectAsync(path); return true; }));
